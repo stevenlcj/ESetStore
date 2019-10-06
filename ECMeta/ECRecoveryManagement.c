@@ -361,8 +361,13 @@ void selectRecoveryNodes(FailedESetsList_t *eSetsList, ECMetaServer_t *enginePtr
                 break;
             }
         }
-    }
     
+    	if(idx == eSetsList->eSetNodesNum )
+    	{
+            break;
+    	}
+    }
+
     if (idx != eSetsList->eSetNodesNum) {
         printf("Unable to recover this eset:%d, only %d nodes available\n",eSetsList->failedESets->esetId, idx);
         return;

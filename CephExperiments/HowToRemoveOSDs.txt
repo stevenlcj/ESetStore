@@ -1,0 +1,3 @@
+If you want to remove osds from osd.0 to osd.2, run the script removeOSDs.sh:
+
+removeOSDs.sh 0 2

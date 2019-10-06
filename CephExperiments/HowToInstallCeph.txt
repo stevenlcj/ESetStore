@@ -1,0 +1,45 @@
+Reference:https://docs.ceph.com/docs/master/install/install-ceph-deploy/
+
+Note that the following commands are executed in Ubuntu 16.04.
+
+Suppose you have four machines with IP and hostname:
+
+192.168.0.100  host00
+
+192.168.0.101  host01
+
+192.168.0.102  host02
+
+192.168.0.102  host03
+
+Run the following commands on host00:
+
+$wget -q -O- 'https://download.ceph.com/keys/release.asc' | sudo apt-key add -
+
+$echo deb https://download.ceph.com/debian-mimic/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
+
+$sudo echo "${USER} ALL = (root) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/t716
+
+$sudo apt update
+
+$sudo apt install ceph-deploy
+
+$mkdir my-cluster
+
+$cd my-cluster
+
+$ceph-deploy new host00
+
+$ceph-deploy install host00 host01 host02 host03
+
+$ceph-deploy admin host00
+
+$ceph-deploy mgr create host00 host01
+
+------------------
+
+If no error, you should have ceph installed on four machines now.
+
+Run 'sudo ceph -s' to check the status of ceph
+
+

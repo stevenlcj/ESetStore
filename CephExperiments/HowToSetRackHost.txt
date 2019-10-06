@@ -1,0 +1,20 @@
+Run the following command on host00 to set host01 to rack0, host02 to rack1 and host03 to rack2:
+
+$sudo ceph osd crush add-bucket rack0 rack
+
+$sudo ceph osd crush add-bucket rack1 rack
+
+$sudo ceph osd crush add-bucket rack2 rack
+
+$sudo ceph osd crush move rack0 root=default
+
+$sudo ceph osd crush move rack1 root=default
+
+$sudo ceph osd crush move rack2 root=default
+
+$sudo ceph osd crush move host01 rack=rack0
+
+$sudo ceph osd crush move host02 rack=rack1
+
+$sudo ceph osd crush move host03 rack=rack2
+

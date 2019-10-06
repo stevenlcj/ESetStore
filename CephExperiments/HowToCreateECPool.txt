@@ -1,0 +1,15 @@
+Run the following command to create an erasure code profile that sets k to 2 and m to 1:
+
+ceph osd erasure-code-profile set k2m1 \
+k=2 \
+m=1 \
+crush-failure-domain=rack
+
+__________________________
+
+Run the following command to create an ecpool with k to 2 and m to 1:
+
+sudo ceph osd pool create ecpool 128 128 erasure k2m1
+
+___________________________
+If you want  to delete all pools, run the script rmPools.sh

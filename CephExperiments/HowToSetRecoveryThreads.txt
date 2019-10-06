@@ -1,0 +1,1 @@
+If you want to set the number recovery threads, change number in setRP.sh to the number of threads you want, then run the script

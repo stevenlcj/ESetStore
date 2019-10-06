@@ -204,10 +204,10 @@ int startReadFile(uint64_t fileId,DiskIOManager_t *diskIOMgr){
         return -1;
     }
     
-    if (checkFileId(diskIOMgr, fileId) == -1) {
+/*   if (checkFileId(diskIOMgr, fileId) == -1) {
         printf("checkFileId(diskIOMgr, fileId) == -1 is true\n");
         return -1;
-    }
+    }*/
     
     pthread_mutex_lock(&diskIOMgr->lock);
     int idx;

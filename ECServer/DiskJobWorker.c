@@ -86,7 +86,7 @@ void revokeDiskJob(DiskJobWorker_t *diskJobWorker, DiskJob_t *diskJobPtr){
     
     if (throughput < 100.0) {
         ++diskJobWorker->count;
-        printf("count:%d, wToCInter:%fms ,Req size:%lu, timeInterval:%fms, throughput:%fMB/s,startRInter:%fms,rInter:%fms,cInter:%fms\n",diskJobWorker->count, wToCInter, reqSize, timeInterval, throughput, startRInter,rInter, cInter);
+        //printf("count:%d, wToCInter:%fms ,Req size:%lu, timeInterval:%fms, throughput:%fMB/s,startRInter:%fms,rInter:%fms,cInter:%fms\n",diskJobWorker->count, wToCInter, reqSize, timeInterval, throughput, startRInter,rInter, cInter);
     }
     return;
 }

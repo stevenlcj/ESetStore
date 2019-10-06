@@ -1,5 +1,5 @@
 CC = gcc
-LIBS = -pthread -lm
+LIBS = -pthread -lm -g
 CFLAGS = -Wall $(OPTFLAGS) $(LIBS)  -L/usr/local/lib
 
 TARGET = ESetServer

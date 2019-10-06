@@ -1,0 +1,11 @@
+chunkServer.MetaServerIP=192.168.0.100
+chunkServer.MetaServerPort=30001
+
+chunkServer.ChunkServerIP=192.168.0.101
+chunkServer.ChunkServerPort=50001
+
+chunkServer.blockPath=/home/esetstore/ECFile/
+
+chunkServer.recoveryBufSizeInKB=256
+
+chunkServer.recoveryBufNum=2

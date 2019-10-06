@@ -21,7 +21,7 @@
 #define MAX_CLIENT_CONN_NUM 1024
 #define MAX_CHUNK_CONN_NUM 10240
 #define MAX_CLIENT_THREAD_NUM 16
-#define MAX_EVENTS 16
+#define MAX_EVENTS 128
 
 #define DEFAULT_READ_WRITE_BUF_SIZE (1*(1<<20)) //1 MB for conn read write buf
 

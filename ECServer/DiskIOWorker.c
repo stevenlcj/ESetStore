@@ -30,6 +30,7 @@ int readLocalFile(int fd, char *buf, int sizeToRead, DiskIOManager_t *diskIOMgr)
     }while (readedSize != sizeToRead);
     
     return readedSize;
+    
 }
 
 int performDiskReadJob(RecoveryThreadManager_t *recoveryThMgr, recoveryBuf_t *curRecoveryBuf){

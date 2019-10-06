@@ -113,9 +113,18 @@ void startECClientManager(ECClientManager_t *ecClientMgr){
     pthread_create(&tid, NULL, startManagingClients, (void *) ecClientMgr);
 }
 
-void removeClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
-    printf("Close client sock:%d\n", ecClientPtr->sockFd);
+void printRemainingClients(ECClientManager_t *ecClientMgr){
+        ECClient_t *ecClientPtr = ecClientMgr->monitoringClients;
+            while (ecClientPtr != NULL) {
+                        printf("Client blockId:%lu reqSize:%lu, handledSize:%lu\n", ecClientPtr->blockId
+                                               ,ecClientPtr->reqSize, ecClientPtr->handledSize);
+                                ecClientPtr = ecClientPtr->next;
+                                    }
+}
 
+void removeClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
+    printf("Close client sock:%d blockId:%lu\n", ecClientPtr->sockFd,ecClientPtr->blockId);
+    //printRemainingClients(ecClientMgr);
     if (ecClientPtr->connState == CLIENT_CONN_STATE_READ ||
         ecClientPtr->connState ==  CLIENT_CONN_STATE_WRITE ||
         ecClientPtr->connState == CLIENT_CONN_STATE_READWRITE) {
@@ -123,7 +132,7 @@ void removeClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
         delete_event(ecClientMgr->efd, ecClientPtr->sockFd);
     }
     
-    printf("Close sock\n");
+    //printf("Close sock\n");
     close(ecClientPtr->sockFd);
 
     if (ecClientMgr->monitoringClients == ecClientPtr) {
@@ -139,8 +148,9 @@ void removeClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
             ecClientPtr->next->pre = ecClientPtr->pre;
         }
     }
-    
-    printf("deallocECClient\n");
+   // printf("\n***********\n");
+   // printRemainingClients(ecClientMgr);
+   // printf("deallocECClient\n");
     deallocECClient(ecClientPtr);
 
 }

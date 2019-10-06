@@ -76,7 +76,7 @@ size_t dumpMetaMsgWithSuffix(ECMessageBuffer_t *ecMsgBuf, char suffix){
     for (idx = 0; idx < ecMsgBuf->wOffset; ++idx) {
         if (*(ecMsgBuf->buf + idx) == suffix) {
 
-            printf("dump size:%d, msg:%s\n",idx, ecMsgBuf->buf);
+            //printf("dump size:%d, msg:%s\n",idx, ecMsgBuf->buf);
             dumpMsgSize = (size_t) idx + 1;
             if ((idx + 1)  == ecMsgBuf->wOffset) {
                 ecMsgBuf->wOffset = 0;

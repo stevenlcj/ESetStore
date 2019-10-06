@@ -570,7 +570,7 @@ void *recoveryMgrThread(void *arg){
         //Notify the writing thread to close its fd
         sem_post(&recoveryThMgr->ioWriteSem);
 
-        printf("curBlockDone:%d\n", recoveryThMgr->curBlockDone);
+        printf("curBlockDone:%lu\n", recoveryThMgr->curBlockDone);
         
         char ch = 'D';
 

@@ -116,7 +116,8 @@ DiskJob_t *dequeueDiskJob(DiskJobQueue_t *diskJobQueuePtr){
         return NULL;
     }
     
-    DiskJob_t *diskJobPtr = diskJobQueuePtr->diskJobTail;
+    DiskJob_t *diskJobPtr = diskJobQueuePtr->diskJobHeader;
+
     if (diskJobQueuePtr->jobNum == 1) {
 
         diskJobQueuePtr->diskJobTail = NULL;
@@ -125,8 +126,8 @@ DiskJob_t *dequeueDiskJob(DiskJobQueue_t *diskJobQueuePtr){
         return diskJobPtr;
     }
     
-    diskJobQueuePtr->diskJobTail = diskJobQueuePtr->diskJobTail->pre;
-    diskJobQueuePtr->diskJobTail->next = NULL;
+    diskJobQueuePtr->diskJobHeader = diskJobQueuePtr->diskJobHeader->next;
+
     --diskJobQueuePtr->jobNum;
     
     return diskJobPtr;

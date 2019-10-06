@@ -72,8 +72,7 @@ ssize_t processMetaOutMsg(ECBlockServerEngine_t *ecBlockServerEnginePtr){
                                 writeMsgBuf->buf+ writeMsgBuf->rOffset, 
                                 (writeMsgBuf->wOffset-writeMsgBuf->rOffset), 0);
         
-        printf("wOffset:%lu, rOffset:%lu, sended size:%ld to server\n", ecBlockServerEnginePtr->writeMsgBuf->wOffset, 
-                                                                        ecBlockServerEnginePtr->writeMsgBuf->rOffset, wSize);
+        //printf("wOffset:%lu, rOffset:%lu, sended size:%ld to server\n", ecBlockServerEnginePtr->writeMsgBuf->wOffset,                                                           ecBlockServerEnginePtr->writeMsgBuf->rOffset, wSize);
         
         if (wSize <= 0) {
             //Add it to ...

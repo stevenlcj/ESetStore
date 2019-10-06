@@ -16,16 +16,14 @@
 
 #include "GetIO.h"
 #include "ecUtils.h"
-#include "ecCommon.h"
 
 #define WRITE_BUF_NUM (2)
-#define DEFAULT_BUF_SIZE (K_SIZE * BUF_NUM * EACH_BUF_SIZE)
+#define DEFAULT_BUF_SIZE (1024 * 1024)
 
 void readECData(ECClientGetContext_t *ecGetContxt, readBuf_t *buf){
     size_t readedSize = 0;
-    struct timeval startTime, endTime;
-    gettimeofday(&startTime, NULL);
-    
+    //struct timeval startTime, endTime;
+    //gettimeofday(&startTime, NULL);
     do{
     	ssize_t curReadSize = readFile(ecGetContxt->clientEngine, ecGetContxt->ecFileFd, (buf->inputBuf + readedSize), (buf->readSize - readedSize));
 
@@ -45,11 +43,11 @@ void readECData(ECClientGetContext_t *ecGetContxt, readBuf_t *buf){
     	//printf("fileSize:%lu, fileReadSize:%lu, curReadSize:%lu\n", ecGetContxt->fileSize, ecGetContxt->fileReadSize,  curReadSize);
     }while(readedSize != buf->readSize);
    
-//    gettimeofday(&endTime, NULL);
-//    double timeInterval = timeIntervalInMS(startTime, endTime);
-//    double throughput = ((double)buf->readSize/1024.0/1024.0)/(timeInterval/1000.0);
+    //gettimeofday(&endTime, NULL);
+    //double timeInterval = timeIntervalInMS(startTime, endTime);
+    //double throughput = ((double)buf->readSize/1024.0/1024.0)/(timeInterval/1000.0);
     
-//    printf("readECData size:%luMB, throughput:%fMB/s timeInterval:%fms\n",(buf->readSize/1024/1024),throughput, timeInterval);
+    //printf("readECData size:%luMB, throughput:%fMB/s timeInterval:%fms\n",(buf->readSize/1024/1024),throughput, timeInterval);
     
 	return;
 }
@@ -92,7 +90,6 @@ void *getReadWorker(void *arg){
 			}
 
 			//printf("readECData rIdx:%d\n",ecGetContxt->rIdx);
-//            printf("readECData readSize:%lu\n", buf->readSize);
 			readECData(ecGetContxt, buf);
 			ecGetContxt->bufsInReadFlags[ecGetContxt->rIdx] = 1;
 			ecGetContxt->rIdx = (ecGetContxt->rIdx + 1) % ecGetContxt->bufNum;
@@ -175,7 +172,6 @@ ECClientGetContext_t *createECClientGetContext(ECClientEngine_t *clientEngine, i
 
     ecGetContxt->bufNum = bufNum;
     ecGetContxt->eachBufSize = bufSize;
-    printf("eachBufSize:%lu\n",bufSize);
     ecGetContxt->bufsInReadFlags = (int *)malloc(sizeof(int)*ecGetContxt->bufNum);
 
     memset(ecGetContxt->bufsInReadFlags,0, sizeof(int)*ecGetContxt->bufNum);

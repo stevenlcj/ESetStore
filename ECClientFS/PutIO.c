@@ -16,18 +16,17 @@
 
 #include "PutIO.h"
 #include "ecUtils.h"
-#include "ecCommon.h"
 
 #define WRITE_BUF_NUM (2)
-#define DEFAULT_BUF_SIZE (K_SIZE * BUF_NUM * EACH_BUF_SIZE)
+#define DEFAULT_BUF_SIZE (1024 * 1024)
 
 void writeECData(ECClientPutContext_t *ecPutContxt, writeBuf_t *buf){
     size_t writedSize = 0;
     do{
-//    	printf("start writeFile fd:%d, size:%lu\n",ecPutContxt->ecFileFd, buf->readSize);
+    	printf("start writeFile fd:%d, size:%lu\n",ecPutContxt->ecFileFd, buf->readSize);
     	ssize_t curWritedSize = writeFile(ecPutContxt->clientEngine, ecPutContxt->ecFileFd, (buf->inputBuf + writedSize), (buf->readSize - writedSize));
 
-//    	printf("curWritedSize:%ld\n", curWritedSize);
+    	printf("curWritedSize:%ld\n", curWritedSize);
 
     	if (curWritedSize == 0)
     	{
@@ -211,7 +210,7 @@ void deallocECClientPutContext(ECClientPutContext_t *ecPutContxt){
 
 void startPutWork(ECClientEngine_t *clientEngine, char *filesToPut[], int fileNum){
 	ECClientPutContext_t *ecPutContxt = createECClientPutContext(clientEngine, WRITE_BUF_NUM, DEFAULT_BUF_SIZE);
-    
+
 	ecPutContxt->writeOverFlag = 0;
 
 	pthread_t readWorker_pid, writeWorker_pid;
@@ -232,6 +231,7 @@ void startPutWork(ECClientEngine_t *clientEngine, char *filesToPut[], int fileNu
 		}
 
 		ecPutContxt->ecFileFd = createFile(clientEngine, filesToPut[idx]);
+
 		size_t alginedBufSize = alignBufSize(ecPutContxt->eachBufSize,
 								getFileStripeK(clientEngine,ecPutContxt->ecFileFd)*getFileStreamingSize(clientEngine,ecPutContxt->ecFileFd));
 

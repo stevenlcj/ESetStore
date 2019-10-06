@@ -1,0 +1,20 @@
+# Client listener port
+metaServer.clientPort = 20001
+
+# Chunk server listener port.
+metaServer.chunkServerPort = 30001
+
+metaServer.StripeK = 2
+metaServer.StripeM = 1
+metaServer.StripeW = 8
+
+metaServer.StripePacketSizeInLong = 1
+metaServer.streamingSize = 64
+metaServer.overlappingFactor = 1
+metaServer.blockSizeLimitsInMB = 64
+metaServer.heartBeatIntervalInMS = 2000
+metaServer.markServerFailedInterval = 5
+metaServer.recoveryIntervalInSec = 5
+
+metaServer.startRecoveryIntervalInSec = 3
+metaServer.startRecoveryIntervalInSec = 3

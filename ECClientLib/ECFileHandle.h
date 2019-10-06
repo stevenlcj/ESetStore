@@ -22,6 +22,7 @@ typedef struct {
     int serverStatus;
 }blockInfo_t;
 
+
 typedef enum{
     ECFILE_STATE_UNINIT = 0x01,
     ECFILE_STATE_INIT,

@@ -10,8 +10,8 @@
 #include "DeleteIO.h"
 
 void startDeleteWork(ECClientEngine_t *clientEngine, char *filesToDelete[], int fileNum){
-//	int idx;
-//	int ret;
+	int idx;
+	int ret;
 	/*for (idx = 0; idx < fileNum; ++idx)
 	{
 		ret = deleteFile(clientEngine, filesToDelete[idx]);

@@ -76,7 +76,7 @@ int main(int argc, char *argv[]){
     	printf("%s\n",filePtrs[fileIdx]);
     }
 	char cfgFile[50]="\0";
-	char *ecStoreHomePath = getenv(ESetStoreHome);
+	char *ecStoreHomePath = getenv(ECStoreHome);
 	
 	strcat(cfgFile,ecStoreHomePath);
 	strcat(cfgFile,cfgFileSuffix);
@@ -85,8 +85,8 @@ int main(int argc, char *argv[]){
 	
 	struct configProperties *cfgPropties= loadProperties(cfgFile);
 	
-	char *MetaIPAddr = getStrValue(cfgPropties, ESetStoreMetaServer_IP);
-	int MetaPort = getIntValue(cfgPropties, ESetStoreMetaServer_Port);
+	char *MetaIPAddr = getStrValue(cfgPropties, ECStoreMetaServer_IP);
+	int MetaPort = getIntValue(cfgPropties, ECStoreMetaServer_Port);
 	
 	//printf("MetaServer IP addr:%s, port:%d\n", MetaIPAddr, MetaPort);
 	

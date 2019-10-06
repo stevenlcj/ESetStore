@@ -12,7 +12,6 @@
 
 #include "ECClientEngine.h"
 
-
 typedef struct writeBuf{
 	char *inputBuf;
 	size_t bufSize;

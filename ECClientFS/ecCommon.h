@@ -13,10 +13,6 @@
 
 #define EC_DEBUG_MODE
 
-#define K_SIZE 10
-#define BUF_NUM 2
-#define EACH_BUF_SIZE (256 * 1024)
-
 #define MAX_CFG_KEY_VALUE_SIZE 255
 
 #define DEFAULT_CHUNK_SERVER_PORT 30000

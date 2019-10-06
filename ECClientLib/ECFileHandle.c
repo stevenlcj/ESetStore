@@ -291,6 +291,16 @@ void initReadFileFromMetaReply(ECFileManager_t *ecFileMgr, int fd, const char *r
         getBlockInfo(blockIdx, blockPtr, replyBuf);
     }
     
+    blockInfo_t *blockPtr0 = ecFilePtr->blocks;
+    blockInfo_t *blockPtr1 = ecFilePtr->blocks + 1;
+    
+    if((blockPtr0->IPSize == blockPtr1->IPSize) && (strncmp(blockPtr0->IPAddr,blockPtr1->IPAddr,blockPtr0->IPSize) == 0)){
+        printf("status changed to degraded\n");
+        blockPtr0->serverStatus = 0;
+        ecFilePtr->degradedReadFlag = 1;
+    }
+
+    
     for (blockIdx = 0; blockIdx < (int) ecFilePtr->stripeK; ++blockIdx) {
         blockInfo_t *blockPtr = ecFilePtr->blocks + blockIdx;
         if (blockPtr->serverStatus == 0) {

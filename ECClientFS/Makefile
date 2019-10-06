@@ -1,29 +1,29 @@
 CC = gcc
 
-libESetClient = ESetClient
-#test ! -f ${ESetSTORE_HOME}/lib/libESetClientGCRS.so  && libESetClient = ESetClient
+libECClient = ESetClient
+#test ! -f ${ECSTORE_HOME}/lib/libECClientGCRS.so  && libECClient = ECClient
 
-INCLUDES = -I. -I${ESetSTORE_HOME}/include
-LIB_CLIENT := -L${ESetSTORE_HOME}/lib
+INCLUDES = -I. -I${ECSTORE_HOME}/include
+LIB_CLIENT := -L${ECSTORE_HOME}/lib 
 
-LIBS = -pthread -l${libESetClient}
+LIBS = -pthread -l${libECClient}
 
 CFLAGS = -Wall $(OPTFLAGS) $(LIB_CLIENT) -L/usr/local/lib ${INCLUDES} $(LIBS)
  
-TARGET = ESetClientFS
-OBJS = configProperties.o cfgParser.o ecUtils.o ESetClientFS.o PutIO.o DeleteIO.o GetIO.o
+TARGET = ECClientFS
+OBJS = configProperties.o cfgParser.o ecUtils.o ECClientFS.o PutIO.o DeleteIO.o GetIO.o
 
 ALL = $(OBJS) $(TARGET)
 all: $(ALL)
 
 .SUFFIXES: .c .cu .o
 
-$(TARGET): $(OBJS)
-	$(CC) -o $(TARGET) $(OBJS) $(CFLAGS)
+ECClientFS: $(OBJS)
+	$(CC) -o ECClientFS $(OBJS) $(CFLAGS)
 
 configProperties.o: configProperties.h
 cfgParser.o: cfgParser.h configProperties.h
-ESetClientFS.o: cfgParser.h configProperties.h ECStoreClientEnv.h
+ECClientFS.o: cfgParser.h configProperties.h ECStoreClientEnv.h
 ecUtils.o: ecUtils.h
 PutIO.o: PutIO.h
 DeleteIO.o: DeleteIO.h
@@ -31,8 +31,8 @@ GetIO.o: GetIO.h
 
 .PHONY : clean
 clean:
-	-rm -rf $(TARGET) *.o
+	-rm -rf ECClientFS *.o
 
 install:
-	mkdir -p ${ESetSTORE_HOME}/bin
-	cp $(TARGET) ${ESetSTORE_HOME}/bin
+	mkdir -p ${ECSTORE_HOME}/bin
+	cp ECClientFS ${ECSTORE_HOME}/bin

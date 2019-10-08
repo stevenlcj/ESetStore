@@ -33,11 +33,11 @@ void addClientWriteEvent(ECClientThread_t *ecClientThread, ClientConnection_t *c
     }
     
     curConn->curState = CLIENT_CONN_STATE_READWRITE;
-    update_event(ecClientThread->efd, EPOLLIN | EPOLLOUT | EPOLLET , curConn->sockFd, curConn);
+    update_event(ecClientThread->efd, EPOLLIN | EPOLLOUT , curConn->sockFd, curConn);
 }
 
 void removeClientWriteEvent(ECClientThread_t *ecClientThread, ClientConnection_t *curConn){
-    update_event(ecClientThread->efd, EPOLLIN | EPOLLET , curConn->sockFd, curConn);
+    update_event(ecClientThread->efd, EPOLLIN  , curConn->sockFd, curConn);
     curConn->curState = CLIENT_CONN_STATE_READ;
 }
 
@@ -399,7 +399,7 @@ ECClientThreadManager_t *createClientThreadManager(void *ecMetaEnginePtr){
 }
 
 void monitoringPipeWriteble(ECClientThread_t *ecClientThread){
-    add_event(ecClientThread->efd, EPOLLOUT | EPOLLET, ecClientThread->pipes[1], ecClientThread->clientConn[0]);
+    add_event(ecClientThread->efd, EPOLLOUT , ecClientThread->pipes[1], ecClientThread->clientConn[0]);
     ecClientThread->curPipeState = PIPE_UNABLETOWRITE;
 }
 void initECClientThread(ECClientThread_t *ecClientThread){
@@ -471,7 +471,7 @@ void threadMonitorNewConnection(ECClientThread_t *ecClientThread, ClientConnecti
     ecClientThread->clientConn[idx]->curState =  CLIENT_CONN_STATE_READ;
     
     printf("Add EPOLLIN to sock:%d\n", ecClientThread->clientConn[idx]->sockFd);
-    int status = add_event(ecClientThread->efd, EPOLLIN | EPOLLET, ecClientThread->clientConn[idx]->sockFd, ecClientThread->clientConn[idx]);
+    int status = add_event(ecClientThread->efd, EPOLLIN , ecClientThread->clientConn[idx]->sockFd, ecClientThread->clientConn[idx]);
     
     if(status ==-1)
     {
@@ -539,7 +539,7 @@ void startMonitoringConn(ECClientThread_t *ecClientThread){
     
     ecClientThread->clientConn[0] = clientConnPtr;
     
-    add_event(ecClientThread->efd, EPOLLIN | EPOLLET, ecClientThread->clientConn[0]->sockFd, ecClientThread->clientConn[0]);
+    add_event(ecClientThread->efd, EPOLLIN , ecClientThread->clientConn[0]->sockFd, ecClientThread->clientConn[0]);
     ecClientThread->clientConn[0]->curState = CLIENT_CONN_STATE_READ;
     
     while (metaServer->exitFlag == 0) {

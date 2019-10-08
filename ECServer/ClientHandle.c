@@ -123,7 +123,7 @@ void printRemainingClients(ECClientManager_t *ecClientMgr){
 }
 
 void removeClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
-    printf("Close client sock:%d blockId:%lu\n", ecClientPtr->sockFd,ecClientPtr->blockId);
+    //printf("Close client sock:%d blockId:%lu\n", ecClientPtr->sockFd,ecClientPtr->blockId);
     //printRemainingClients(ecClientMgr);
     if (ecClientPtr->connState == CLIENT_CONN_STATE_READ ||
         ecClientPtr->connState ==  CLIENT_CONN_STATE_WRITE ||
@@ -148,25 +148,27 @@ void removeClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
             ecClientPtr->next->pre = ecClientPtr->pre;
         }
     }
-   // printf("\n***********\n");
-   // printRemainingClients(ecClientMgr);
+    //printf("\n-----------------------------------------------\n");
+    //printRemainingClients(ecClientMgr);
    // printf("deallocECClient\n");
     deallocECClient(ecClientPtr);
 
 }
 
 void monitoringNewClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
+    ecClientPtr->pre= NULL;
+    ecClientPtr->next= NULL;
+    
     if (ecClientMgr->monitoringClients != NULL) {
         ecClientPtr->next = ecClientMgr->monitoringClients;
         ecClientMgr->monitoringClients->pre = ecClientPtr;
     }
     
     ecClientMgr->monitoringClients = ecClientPtr;
-    ecClientPtr->pre = NULL;
     
     printf("Add new client sock:%d\n", ecClientPtr->sockFd);
     
-    add_event(ecClientMgr->efd, EPOLLIN | EPOLLET, ecClientPtr->sockFd, (void *) ecClientPtr);
+    add_event(ecClientMgr->efd, EPOLLIN , ecClientPtr->sockFd, (void *) ecClientPtr);
     
     ecClientPtr->clientInState = ECCLIENT_IN_STATE_WAIT;
     ecClientPtr->connState = CLIENT_CONN_STATE_READ;
@@ -205,7 +207,7 @@ void startMonitoringClients(ECClientManager_t *ecClientMgr){
         return;
     }
     
-    add_event(ecClientMgr->efd, EPOLLIN | EPOLLET, ecClientMgr->clientPipe->sockFd, (void *)ecClientMgr->clientPipe);
+    add_event(ecClientMgr->efd, EPOLLIN, ecClientMgr->clientPipe->sockFd, (void *)ecClientMgr->clientPipe);
     
     while (blockServerEnginePtr->exitFlag == 0) {
         eventsNum =epoll_wait(ecClientMgr->efd, events, MAX_EVENTS,DEFAULT_ACCEPT_TIME_OUT_IN_SEC);

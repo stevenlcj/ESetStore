@@ -108,7 +108,7 @@ void start_wait_conn(ECBlockServerEngine_t *ecBlockServerEnginePtr){
 //    struct epoll_event clientEvent, serverEvent;
     struct epoll_event* events;
 
-    int status = add_event(ecBlockServerEnginePtr->eClientfd, EPOLLIN | EPOLLET, ecBlockServerEnginePtr->clientFd, NULL);
+    int status = add_event(ecBlockServerEnginePtr->eClientfd, EPOLLIN, ecBlockServerEnginePtr->clientFd, NULL);
     if(status == -1)
     {
         perror("epoll_ctl clientEvent");

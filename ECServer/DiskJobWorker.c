@@ -194,7 +194,7 @@ void performDiskIOWork(DiskJobWorker_t *diskJobWorkerPtr){
         return;
     }
     
-    add_event(diskJobWorkerPtr->efd, EPOLLIN | EPOLLET, diskJobWorkerPtr->workerPipes[0], NULL);
+    add_event(diskJobWorkerPtr->efd, EPOLLIN, diskJobWorkerPtr->workerPipes[0], NULL);
 
     //printf("start recv disk io job\n");
      do{

@@ -176,14 +176,14 @@ void start_wait_conn(ECMetaServer_t *ecMetaServer){
 //    serverEvent.events = EPOLLIN | EPOLLET;
 //
 //    int status = epoll_ctl(ecMetaServer->efd, EPOLL_CTL_ADD,ecMetaServer->clientFd,&clientEvent);
-    int status = add_event(ecMetaServer->efd, EPOLLIN | EPOLLET, ecMetaServer->clientFd, NULL);
+    int status = add_event(ecMetaServer->efd, EPOLLIN, ecMetaServer->clientFd, NULL);
     if(status ==-1)
     {
         perror("epoll_ctl clientEvent");
         return;
     }
     
-    status = add_event(ecMetaServer->efd, EPOLLIN | EPOLLET,ecMetaServer->chunkFd, NULL);
+    status = add_event(ecMetaServer->efd, EPOLLIN ,ecMetaServer->chunkFd, NULL);
     
     if(status == -1)
     {

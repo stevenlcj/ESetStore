@@ -31,7 +31,7 @@ void addWriteEvent(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
 	}
 
     ecClientPtr->connState = CLIENT_CONN_STATE_READWRITE;
-    update_event(ecClientMgr->efd, EPOLLIN | EPOLLOUT | EPOLLET , ecClientPtr->sockFd, ecClientPtr);
+    update_event(ecClientMgr->efd, EPOLLIN | EPOLLOUT  , ecClientPtr->sockFd, ecClientPtr);
 }
 
 void removeWriteEvent(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
@@ -40,7 +40,7 @@ void removeWriteEvent(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
 		return;
 	}
 
-    update_event(ecClientMgr->efd, EPOLLIN | EPOLLET , ecClientPtr->sockFd, ecClientPtr);
+    update_event(ecClientMgr->efd, EPOLLIN , ecClientPtr->sockFd, ecClientPtr);
     ecClientPtr->connState = CLIENT_CONN_STATE_READ;
 }
 

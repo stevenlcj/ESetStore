@@ -1,6 +1,3 @@
 #!/bin/bash
-cmdStr=$(lsof -i:50001)
-pidStr=$(echo "$cmdStr" | grep -oP '(?<=ESetServe ).*(?= t716)')
+ps aux | grep Eset | kill -9 $(gawk {'print $2'})
 rm -rf /home/esetstore/ECFile/*
-echo $pidStr
-kill -9 $pidStr

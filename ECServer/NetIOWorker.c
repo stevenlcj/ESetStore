@@ -86,7 +86,7 @@ int addNetWriteEvent(RecoveryThreadManager_t *recoveryThMgr, blockInfo_t *blockI
         return -1;
     }
     
-    int status = update_event(recoveryThMgr->recoveryEfd, EPOLLIN | EPOLLOUT | EPOLLET, blockInfoPtr->fd, NULL);
+    int status = update_event(recoveryThMgr->recoveryEfd, EPOLLIN | EPOLLOUT, blockInfoPtr->fd, NULL);
     
     if (status == -1) {
         printf("Unable to update event for blockserver sock with idx:%d\n", blockInfoPtr->idx);
@@ -223,7 +223,7 @@ int requestBlockRead(RecoveryThreadManager_t *recoveryThMgr, blockInfo_t *blockI
                 return -1;
             }
             blockInfoPtr->curNetState = BLOCK_NET_STATE_CONNECTED;
-            int status = add_event(recoveryThMgr->recoveryEfd, EPOLLIN | EPOLLET, blockInfoPtr->fd, NULL);
+            int status = add_event(recoveryThMgr->recoveryEfd, EPOLLIN , blockInfoPtr->fd, NULL);
             
             if (status  == -1) {
                 perror("epoll_ctl add_event blockInfoPtr->fd");
@@ -636,7 +636,7 @@ void *netDiskIOWorker(void *arg){
         return arg;
     }
 
-    int status = add_event(recoveryThMgr->recoveryEfd, EPOLLIN | EPOLLET, recoveryThMgr->mgrPipes[0], NULL);
+    int status = add_event(recoveryThMgr->recoveryEfd, EPOLLIN , recoveryThMgr->mgrPipes[0], NULL);
     
     if (status == -1) {
         printf("Unable to add event for recovery pipe\n");

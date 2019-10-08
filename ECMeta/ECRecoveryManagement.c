@@ -361,7 +361,6 @@ void selectRecoveryNodes(FailedESetsList_t *eSetsList, ECMetaServer_t *enginePtr
                 break;
             }
         }
-    
     }
 
     if (idx != eSetsList->eSetNodesNum) {
@@ -428,8 +427,6 @@ void addRecoveringESets(ECRecoveryManager_t *ecRecoveryMgrPtr, FailedESetsList_t
     ecRecoveryMgrPtr->recoveringESetsLists = failedESetsList;
     
     performRecoveringESet(ecRecoveryMgrPtr, failedESetsList);
-    
-    FailedESetsList_t *inRecoveringESet = ecRecoveryMgrPtr->recoveringESetsLists;
     
 }
 

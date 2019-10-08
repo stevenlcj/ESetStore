@@ -26,12 +26,12 @@ void addWriteEvent(BlockServerManager_t *blockServerMgr, BlockServer_t *blockSer
         return;
     }
 
-    update_event(blockServerMgr->efd, EPOLLIN | EPOLLOUT | EPOLLET , blockServerPtr->sockFd, blockServerPtr);
+    update_event(blockServerMgr->efd, EPOLLIN | EPOLLOUT , blockServerPtr->sockFd, blockServerPtr);
     blockServerPtr->sockState = SERVER_SOCK_EVENT_READ_WRITE;
 }
 
 void removeWriteEvent(BlockServerManager_t *blockServerMgr, BlockServer_t *blockServerPtr){
-    update_event(blockServerMgr->efd, EPOLLIN | EPOLLET , blockServerPtr->sockFd, blockServerPtr);
+    update_event(blockServerMgr->efd, EPOLLIN , blockServerPtr->sockFd, blockServerPtr);
     blockServerPtr->sockState = SERVER_SOCK_EVENT_READ;
 }
 
@@ -308,7 +308,7 @@ void checkHeartBeat(BlockServerManager_t *blockServerMgr){
 void addEventsToBlockServerSock(BlockServerManager_t *blockServerMgr){
     
     if (blockServerMgr->metaBlockServer->sockState == SERVER_SOCK_EVENT_UNREGISTERED) {
-        int status = add_event(blockServerMgr->efd, EPOLLIN | EPOLLET, blockServerMgr->metaBlockServer->sockFd, blockServerMgr->metaBlockServer);
+        int status = add_event(blockServerMgr->efd, EPOLLIN, blockServerMgr->metaBlockServer->sockFd, blockServerMgr->metaBlockServer);
         if(status ==-1)
         {
             perror("epoll_ctl add_event blockServer");
@@ -324,8 +324,8 @@ void addEventsToBlockServerSock(BlockServerManager_t *blockServerMgr){
     while (curServerPtr != NULL) {
         
         if (curServerPtr->sockState == SERVER_SOCK_EVENT_UNREGISTERED) {
-            int status = add_event(blockServerMgr->efd, EPOLLIN | EPOLLET, curServerPtr->sockFd, curServerPtr);
-            printf("r:%d s:%d with addr:%p add EPOLLIN | EPOLLET\n", curServerPtr->rackId, curServerPtr->serverId, curServerPtr);
+            int status = add_event(blockServerMgr->efd, EPOLLIN, curServerPtr->sockFd, curServerPtr);
+            printf("r:%d s:%d with addr:%p add EPOLLIN \n", curServerPtr->rackId, curServerPtr->serverId, curServerPtr);
             if(status ==-1)
             {
                 perror("epoll_ctl add_event blockServer");

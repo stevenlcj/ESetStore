@@ -677,7 +677,7 @@ void *workerMonitor(void *arg){
     for (idx = 0; idx < keyValueEnginePtr->workerNum; ++idx)
     {
         KeyValueWorker_t *workerPtr = (keyValueEnginePtr->workers + idx);
-        int status = add_event(keyValueEnginePtr->efd, EPOLLIN | EPOLLET, 
+        int status = add_event(keyValueEnginePtr->efd, EPOLLIN , 
                                 workerPtr->workerPipes[0], (void *)workerPtr);
         if(status ==-1)
         {

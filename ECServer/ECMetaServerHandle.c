@@ -49,12 +49,12 @@ void addMetaWriteEvent(ECBlockServerEngine_t *ecBlockServerEnginePtr){
         return;
     }
     
-    update_event(ecBlockServerEnginePtr->eMetafd, EPOLLIN | EPOLLOUT | EPOLLET , ecBlockServerEnginePtr->metaFd, NULL);
+    update_event(ecBlockServerEnginePtr->eMetafd, EPOLLIN | EPOLLOUT , ecBlockServerEnginePtr->metaFd, NULL);
     ecBlockServerEnginePtr->metaSockState = SERVER_SOCK_STATE_READ_WRITE;
 }
 
 void removeMetaWriteEvent(ECBlockServerEngine_t *ecBlockServerEnginePtr){
-    update_event(ecBlockServerEnginePtr->eMetafd, EPOLLIN | EPOLLET , ecBlockServerEnginePtr->metaFd, NULL);
+    update_event(ecBlockServerEnginePtr->eMetafd, EPOLLIN  , ecBlockServerEnginePtr->metaFd, NULL);
     ecBlockServerEnginePtr->metaSockState = SERVER_SOCK_STATE_READ;
 }
 
@@ -261,7 +261,7 @@ void *metaWorkingThread(void *arg){
 
     struct epoll_event* events;
     
-    int status = add_event(ecBlockServerEnginePtr->eMetafd, EPOLLIN | EPOLLET, ecBlockServerEnginePtr->metaFd, NULL);
+    int status = add_event(ecBlockServerEnginePtr->eMetafd, EPOLLIN, ecBlockServerEnginePtr->metaFd, NULL);
     
     ecBlockServerEnginePtr->metaSockState = SERVER_SOCK_STATE_READ;
     
@@ -271,7 +271,7 @@ void *metaWorkingThread(void *arg){
         return NULL;
     }
     
-    status = add_event(ecBlockServerEnginePtr->eMetafd, EPOLLIN | EPOLLET, ecBlockServerEnginePtr->serverRecoveryPipes[0], NULL);
+    status = add_event(ecBlockServerEnginePtr->eMetafd, EPOLLIN , ecBlockServerEnginePtr->serverRecoveryPipes[0], NULL);
     
     if(status == -1)
     {

@@ -362,10 +362,6 @@ void selectRecoveryNodes(FailedESetsList_t *eSetsList, ECMetaServer_t *enginePtr
             }
         }
     
-    	if(idx == eSetsList->eSetNodesNum )
-    	{
-            break;
-    	}
     }
 
     if (idx != eSetsList->eSetNodesNum) {

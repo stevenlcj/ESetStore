@@ -3,8 +3,8 @@ CC = gcc
 libECClient = ESetClient
 #test ! -f ${ECSTORE_HOME}/lib/libECClientGCRS.so  && libECClient = ECClient
 
-INCLUDES = -I. -I${ECSTORE_HOME}/include
-LIB_CLIENT := -L${ECSTORE_HOME}/lib 
+INCLUDES = -I. -I${ESetSTORE_HOME}/include
+LIB_CLIENT := -L${ESetSTORE_HOME}/lib 
 
 LIBS = -pthread -l${libECClient}
 
@@ -34,5 +34,5 @@ clean:
 	-rm -rf ECClientFS *.o
 
 install:
-	mkdir -p ${ECSTORE_HOME}/bin
-	cp ECClientFS ${ECSTORE_HOME}/bin
+	mkdir -p ${ESetSTORE_HOME}/bin
+	cp ECClientFS ${ESetSTORE_HOME}/bin

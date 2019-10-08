@@ -12,7 +12,7 @@
 const char cmdPut[] = "-put\0";
 const char cmdGet[] = "-get\0";
 const char cmdRm[] = "-rm\0";
-const char ECStoreHome[] = "ECSTORE_HOME\0";
+const char ECStoreHome[] = "ESetSTORE_HOME\0";
 
 const char ECStoreMetaServer_IP[] = "MetaServer_IPADDR\0";
 const char ECStoreMetaServer_Port[] = "MetaServer_Port\0";

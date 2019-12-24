@@ -20,6 +20,10 @@
 #include <sys/epoll.h>
 #include <netdb.h>
 #include <string.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 
 TaskListener_t *createTaskListener(int clientNum, int portToListen){
     TaskListener_t *taskListener = talloc(TaskListener_t, 1);

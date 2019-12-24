@@ -76,3 +76,18 @@ int create_bind_listen(int port)
     
     return listenfd;
 }
+
+int add_event(int efd, uint32_t opFlag, int fd, void *arg){
+    struct epoll_event eEvent;
+    eEvent.events = opFlag;
+    
+    if (arg == NULL) {
+        eEvent.data.fd = fd;
+    }else{
+        eEvent.data.ptr = arg;
+    }
+    
+    int status = epoll_ctl(efd, EPOLL_CTL_ADD,fd,&eEvent);
+    
+    return status;
+}

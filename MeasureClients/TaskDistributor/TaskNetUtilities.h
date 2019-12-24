@@ -15,4 +15,6 @@ int create_TCP_sockFd();
 int create_epollfd();
 int create_bind_listen(int port);
 
+int add_event(int efd, uint32_t opFlag, int fd, void *arg);
+
 #endif /* TaskNetUtilities_h */

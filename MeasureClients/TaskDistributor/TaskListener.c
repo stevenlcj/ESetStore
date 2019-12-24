@@ -47,12 +47,13 @@ int acceptRunnerInstances(TaskListener_t *taskListener, TaskRunnerInstance_t *ru
     
     int acceptedClientNum = 0;
     while (acceptedClientNum != taskListener->clientNum) {
-        int eventsNum =epoll_wait(ecClientMgr->efd, events, MAX_CONN_EVENTS,DEFAULT_ACCEPT_TIME_OUT_IN_MLSEC);
+        int eventsNum =epoll_wait(taskListener->eFd, events, MAX_CONN_EVENTS,DEFAULT_ACCEPT_TIME_OUT_IN_MLSEC);
         if (eventsNum  <= 0) {
             //            printf("Time out\n");
             continue;
         }
         
+        int idx;
         for (idx = 0 ; idx < eventsNum; ++idx) {
             if((events[idx].events & EPOLLERR)||
                (events[idx].events & EPOLLHUP)||
@@ -64,7 +65,7 @@ int acceptRunnerInstances(TaskListener_t *taskListener, TaskRunnerInstance_t *ru
                 TaskRunnerInstance_t *taskRunnerInstance = runnerInstances + acceptedClientNum;
                 struct sockaddr_in remoteAddr;
                 socklen_t nAddrlen = sizeof(remoteAddr);
-                taskRunnerInstance->sockFd = accept(fd, (struct sockaddr *)&remoteAddr, &nAddrlen);
+                taskRunnerInstance->sockFd = accept(taskListener->listenFd, (struct sockaddr *)&remoteAddr, &nAddrlen);
                 taskRunnerInstance->IPAddr = inet_ntoa(remoteAddr.sin_addr.s_addr);
                 printf("Get Connection From IP:%s\n", taskRunnerInstance->IPAddr);
                 
@@ -75,6 +76,7 @@ int acceptRunnerInstances(TaskListener_t *taskListener, TaskRunnerInstance_t *ru
                 
                 ++acceptedClientNum;
             }
+        }
 
     }
     

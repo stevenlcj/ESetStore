@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "TaskRunnerInstance.h"
+#include "TaskGenerator.h"
 
 typedef struct TaskListener{
     int eFd;
@@ -23,4 +24,6 @@ typedef struct TaskListener{
 TaskListener_t *createTaskListener(int clientNum, int portToListen);
 
 int acceptRunnerInstances(TaskListener_t *taskListener, TaskRunnerInstance_t *runnerInstances);
+
+void startDistributingTasks(TaskListener_t *taskListener, TaskRunnerInstance_t *runnerInstances, TaskManager_t *taskMgr );
 #endif /* TaskListener_h */

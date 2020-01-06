@@ -23,9 +23,59 @@
 #include "TaskRunnerInstance.h"
 #include "TaskRunnerCommon.h"
 #include "TaskNetUtilities.h"
+#include "strUtils.h"
 
 
-//Wait Task->readTheData->parseTask ->performTask || -> reportTask
+void addWriteEvent(TaskRunnerManager_t *taskRunnerMgr){
+    if (taskRunnerMgr->connState == CLIENT_CONN_STATE_READWRITE)
+    {
+        return;
+    }
+    
+    taskRunnerMgr->connState = CLIENT_CONN_STATE_READWRITE;
+    update_event(taskRunnerMgr->efd, EPOLLIN | EPOLLOUT , taskRunnerMgr->sockFd, taskRunnerMgr);
+}
+
+void removeWriteEvent(TaskRunnerManager_t *taskRunnerMgr){
+    if (taskRunnerMgr->connState != CLIENT_CONN_STATE_READWRITE)
+    {
+        return;
+    }
+    
+    update_event(taskRunnerMgr->efd, EPOLLIN , taskRunnerMgr->sockFd, taskRunnerMgr);
+    taskRunnerMgr->connState = CLIENT_CONN_STATE_READ;
+}
+
+
+int writeDataToDistributor(TaskRunnerManager_t *taskRunnerMgr){
+    ECMessageBuffer_t *writeMsgBuf = taskRunnerMgr->writeMsgBuf;
+    
+    while (taskRunnerMgr->writeMsgBuf->rOffset != taskRunnerMgr->writeMsgBuf->wOffset ) {
+        
+        ssize_t wSize = send(taskRunnerMgr->sockFd,  writeMsgBuf->buf+ writeMsgBuf->rOffset, (writeMsgBuf->wOffset-writeMsgBuf->rOffset), 0);
+        
+        //printf("wOffset:%lu, rOffset:%lu send size:%ld to client\n",ecClientPtr->writeMsgBuf->wOffset, ecClientPtr->writeMsgBuf->rOffset, wSize);
+        
+        if (wSize <= 0) {
+            addWriteEvent(taskRunnerMgr);
+            return 1;
+        }
+        
+        //*writeSize = *writeSize + wSize;
+        
+        writeMsgBuf->rOffset = writeMsgBuf->rOffset + wSize;
+        
+        if (writeMsgBuf->rOffset == writeMsgBuf->wOffset) {
+            writeMsgBuf->rOffset = 0;
+            writeMsgBuf->wOffset = 0;
+        }
+    }
+    
+    if (taskRunnerMgr->connState == CLIENT_CONN_STATE_READWRITE) {
+        removeWriteEvent(taskRunnerMgr);
+    }
+    return 0;
+}
 
 int isCmdRecvd(char *buf, size_t bufSize){
     int idx = 0;
@@ -58,8 +108,57 @@ void deallocTaskRunner(TaskRunnerManager_t *taskRunnerMgr){
     
 }
 
-void reportTask(TaskRunnerInstance_t *taskRunnerInstance){
+void constructTaskDoneCmd(TaskRunnerManager_t *taskRunnerMgr, TaskRunnerTask_t *theTask){
+    char startSecStr[] = "StartSec:";
+    char sufCh = '\r';
+    char startUSecStr[] = "StartUSec:";
+    char endSecStr[] = "EndSec:";
+    char endUSecStr[] = "EndUSec:";
+    char fileSizeStr[] = "FileSize:";
+    char suffixStr[] = "\r\n";
     
+    char tempStr[1024];
+    
+    ECMessageBuffer_t *writeMsgBuffer= taskRunnerMgr->writeMsgBuffer;
+    
+    size_t writeSize;
+    writeToBuf(writeMsgBuffer->buf, startSecStr, &writeSize, &writeMsgBuffer->wOffset);
+    uint64_to_str((uint64_t)theTask->startTime.tv_sec, tempStr, 1024);
+    writeToBuf(writeMsgBuffer->buf+writeMsgBuffer->wOffset, tempStr, &writeSize, &writeMsgBuffer->wOffset);
+    writeMsgBuffer->buf[writeMsgBuffer->wOffset] = sufCh;
+    writeMsgBuffer->wOffset = writeMsgBuffer->wOffset + 1;
+    
+    writeToBuf(writeMsgBuffer->buf, startUSecStr, &writeSize, &writeMsgBuffer->wOffset);
+    uint64_to_str((uint64_t)theTask->startTime.tv_usec, tempStr, 1024);
+    writeToBuf(writeMsgBuffer->buf+writeMsgBuffer->wOffset, tempStr, &writeSize, &writeMsgBuffer->wOffset);
+    writeMsgBuffer->buf[writeMsgBuffer->wOffset] = sufCh;
+    writeMsgBuffer->wOffset = writeMsgBuffer->wOffset + 1;
+
+    writeToBuf(writeMsgBuffer->buf, endSecStr, &writeSize, &writeMsgBuffer->wOffset);
+    uint64_to_str((uint64_t)theTask->endTime.tv_sec, tempStr, 1024);
+    writeToBuf(writeMsgBuffer->buf+writeMsgBuffer->wOffset, tempStr, &writeSize, &writeMsgBuffer->wOffset);
+    writeMsgBuffer->buf[writeMsgBuffer->wOffset] = sufCh;
+    writeMsgBuffer->wOffset = writeMsgBuffer->wOffset + 1;
+
+    writeToBuf(writeMsgBuffer->buf, endUSecStr, &writeSize, &writeMsgBuffer->wOffset);
+    uint64_to_str((uint64_t)theTask->endTime.tv_usec, tempStr, 1024);
+    writeToBuf(writeMsgBuffer->buf+writeMsgBuffer->wOffset, tempStr, &writeSize, &writeMsgBuffer->wOffset);
+    writeMsgBuffer->buf[writeMsgBuffer->wOffset] = sufCh;
+    writeMsgBuffer->wOffset = writeMsgBuffer->wOffset + 1;
+    
+    writeToBuf(writeMsgBuffer->buf, fileSizeStr, &writeSize, &writeMsgBuffer->wOffset);
+    uint64_to_str((uint64_t)taskRunnerMgr->fileSize, tempStr, 1024);
+    writeToBuf(writeMsgBuffer->buf+writeMsgBuffer->wOffset, tempStr, &writeSize, &writeMsgBuffer->wOffset);
+    writeToBuf(writeMsgBuffer->buf+writeMsgBuffer->wOffset, suffixStr, &writeSize, &writeMsgBuffer->wOffset);
+    writeMsgBuffer->buf[writeMsgBuffer->wOffset] = '\0';
+    printf("Msg to write:%s\n",writeMsgBuffer->buf);
+    
+}
+
+//Send cmd:"StartSec:...\rStartUSec:...\rEndSec:...\rEndUSec:...\rFileSize:\r\n"
+void reportTask(TaskRunnerManager_t *taskRunnerMgr, TaskRunnerTask_t *theTask){
+    constructTaskDoneCmd(taskRunnerMgr, theTask);
+    writeDataToDistributor(taskRunnerMgr);
 }
 
 void addDoneTask(TaskRunnerInstance_t *taskRunnerInstance, TaskRunnerTask_t *aTask){
@@ -73,11 +172,6 @@ void addDoneTask(TaskRunnerInstance_t *taskRunnerInstance, TaskRunnerTask_t *aTa
     ++taskRunnerInstance->taskNum;
 }
 
-void sendTaskDoneCmd(TaskRunnerManager_t *taskRunnerMgr){
-    char taskDoneBuf[] = "TaskDone\r\n";
-
-}
-
 void performTask(TaskRunnerManager_t *taskRunnerMgr){
     TaskRunnerTask_t *aTask = talloc(TaskRunnerTask_t, 1);
     memcpy(aTask->taskDescription, taskRunnerMgr->readMsgBuffer->buf, taskRunnerMgr->readMsgBuffer->wOffset);
@@ -89,6 +183,7 @@ void performTask(TaskRunnerManager_t *taskRunnerMgr){
     system(aTask->taskDescription);
     gettimeofday(&aTask->endTime, NULL);
     addDoneTask(taskRunnerMgr->runnerInstance, aTask);
+    reportTask(taskRunnerMgr, aTask);
 }
 
 void parseTask(TaskRunnerManager_t *taskRunnerMgr){
@@ -116,7 +211,7 @@ void waitTask(TaskRunnerManager_t *taskRunnerMgr){
     
     if (events == NULL) {
         perror("unable to alloc memory for events");
-        return -1;
+        return ;
     }
     
     add_event(taskRunnerMgr->efd, EPOLLIN, taskRunnerMgr->sockFd, (void *)taskRunnerMgr);
@@ -135,6 +230,7 @@ void waitTask(TaskRunnerManager_t *taskRunnerMgr){
                 if (events[idx].events & EPOLLIN) {
                     ssize_t readedDataSize = readTheData(taskRunnerMgr);
                     if (readedDataSize == 0) {
+                        printf("Revd 0, exit\n");
                         taskRunnerMgr->exitFlag = 1;
                         break;
                     }
@@ -146,9 +242,11 @@ void waitTask(TaskRunnerManager_t *taskRunnerMgr){
         }
     }
     
+    delete_event(taskRunnerMgr->efd, taskRunnerMgr->sockFd);
+    close(taskRunnerMgr->sockFd);
 }
 
-void runTask(char *IPAddr, int port, int taskType){
+void runTask(char *IPAddr, int port, int taskType, int fileSize){
     TaskRunnerManager_t *taskRunnerMgr = talloc(TaskRunnerManager_t, 1);
     taskRunnerMgr->efd = create_epollfd();
     taskRunnerMgr->sockFd = connectToIPPort(IPAddr, port);
@@ -161,6 +259,7 @@ void runTask(char *IPAddr, int port, int taskType){
     }
     
     taskRunnerMgr->taskType = taskType;
+    taskRunnerMgr->fileSize = fileSize
     
     taskRunnerMgr->runnerInstance = talloc(TaskRunnerInstance_t, 1);
     memset(taskRunnerMgr->runnerInstance, 0, sizeof(TaskRunnerInstance_t));

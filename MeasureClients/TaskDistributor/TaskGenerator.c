@@ -9,6 +9,7 @@
 #include "TaskGenerator.h"
 #include "TaskDistributorCommon.h"
 #include "TaskDistributorUtilities.h"
+#include "MeanVarCal.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -40,6 +41,37 @@ Task_t *dequeueTask(TaskManager_t *mgr){
         mgr->taskHeader = NULL;
         mgr->taskTail = NULL;
 
+    }
+    
+    return theTask;
+}
+
+void enqueueDoneTask(TaskManager_t *mgr, Task_t *theTask){
+    if (mgr->doneTasksNum == 0) {
+        mgr->taskDoneHeader = theTask;
+        mgr->taskDoneTail = theTask;
+    }else{
+        mgr->taskDoneTail->next = theTask;
+        mgr->taskDoneTail = theTask;
+    }
+    
+    ++mgr->doneTasksNum;
+}
+
+Task_t *dequeueDoneTask(TaskManager_t *mgr){
+    Task_t *theTask = NULL;
+    
+    if (mgr->doneTasksNum == 0) {
+        return NULL;
+    }
+    
+    theTask = mgr->taskDoneHeader;
+    mgr->taskDoneHeader = mgr->taskDoneHeader->next;
+    --mgr->doneTasksNum;
+    
+    if (mgr->doneTasksNum == 0 ) {
+        mgr->taskDoneHeader = NULL;
+        mgr->taskDoneTail = NULL;
     }
     
     return theTask;
@@ -84,6 +116,10 @@ TaskManager_t *generateCephTasks(int startIdx, int endIdx){
     mgr->taskHeader = NULL;
     mgr->taskTail = NULL;
     
+    mgr->doneTasksNum = 0;
+    mgr->taskDoneHeader = NULL;
+    mgr->taskDoneTail = NULL;
+    
     return mgr;
 }
 
@@ -96,4 +132,39 @@ TaskManager_t *generateTasks(int startIdx, int endIdx, int taskType){
     return generateCephTasks(startIdx, endIdx);
 }
 
+void calThroughPut(TaskManager_t *mgr){
+    mgr->totalFileSize = 0;
+    mgr->totalTimeConsume = getTimeIntervalInMS(mgr->taskDoneHeader->startTime, mgr->taskDoneTail->endTime);
+    mgr->tasksFileSize = talloc(int, mgr->doneTasksNum);
+    mgr->tasksRunTimeConsumes = talloc(double, mgr->doneTasksNum);
+    mgr->tasksRunTimeThroughput = talloc(double, mgr->doneTasksNum);
+    mgr->tasksDoneTimeConsumes = talloc(double, mgr->doneTasksNum);
+    mgr->tasksDoneTimeThroughput = talloc(double, mgr->doneTasksNum);
+    
+    Task_t *taskPtr = mgr->taskDoneHeader;
+    int idx = 0;
+    for (idx = 0; idx < mgr->doneTasksNum; ++idx) {
+        *(mgr->tasksFileSize+idx)  = taskPtr->taskSize;
+        *(mgr->tasksRunTimeConsumes + idx) = getTimeIntervalInMS(taskPtr->runnerStartTime, taskPtr->runnerEndTime);
+        *(mgr->tasksRunTimeThroughput + idx) = (double) taskPtr->taskSize * 1000.0 / *(mgr->tasksRunTimeConsumes + idx)/1024.0/1024.0;
+        *(mgr->tasksDoneTimeConsumes + idx) = getTimeIntervalInMS(taskPtr->startTime, taskPtr->endTime);
+        *(mgr->tasksDoneTimeThroughput + idx) = (double) taskPtr->taskSize * 1000.0 / *(mgr->tasksDoneTimeConsumes + idx)/1024.0/1024.0;
+        
+        mgr->totalFileSize = (uint64_t)taskPtr->taskSize;
+        taskPtr = taskPtr->next;
+    }
+    
+    mgr->totalThroughput = (double)mgr->totalFileSize* 1000.0/mgr->totalTimeConsume/1024.0/1024.0;
+    
+    mgr->runTimeMeanThroughput = calMeanValue(mgr->tasksRunTimeThroughput, mgr->doneTasksNum);
+    mgr->runTimethroughputVariance = calVarValue(mgr->tasksRunTimeThroughput, mgr->doneTasksNum);
+    
+    mgr->doneTimeMeanThroughput = calMeanValue(mgr->tasksDoneTimeThroughput, mgr->doneTasksNum);
+    mgr->doneTimethroughputVariance = calVarValue(mgr->tasksDoneTimeThroughput, mgr->doneTasksNum);
+
+    printf("Total Time Consume:%fms, Total File Size:%fMB, Total Throughput:%fMB/s\n",mgr->totalTimeConsume, (double)mgr->totalThroughput/1024.0/1024.0, mgr->totalThroughput);
+    printf("Run Time throughput:%fms, Run Time variance:%f\n",mgr->runTimeMeanThroughput, mgr->runTimethroughputVariance);
+    printf("Done Time throughput:%fms, Done Time variance:%f\n",mgr->doneTimeMeanThroughput, mgr->doneTimethroughputVariance);
+    
+}
 

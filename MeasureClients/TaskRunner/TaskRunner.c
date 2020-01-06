@@ -11,10 +11,10 @@
 
 #include "TaskRunnerInstance.h"
 
-#define ARG_SIZE 4
+#define ARG_SIZE 5
 
 void Usage(){
-    printf("Please specify: IPAddr port taskType\n");
+    printf("Please specify: IPAddr port taskType fileSize\n");
     return;
 }
 
@@ -28,8 +28,9 @@ int main(int argc, const char * argv[]) {
     
     int port = atoi(argv[2]);
     int taskType = atoi(argv[3]);
+    int fileSize = atoi(argv[4]);
     
-    runTask(argv[1], port, taskType);
+    runTask(argv[1], port, taskType, fileSize);
     
     return 0;
 }

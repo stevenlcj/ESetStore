@@ -40,6 +40,7 @@ typedef struct TaskRunnerManager{
     int efd;
     int sockFd;
     int taskType;
+    int fileSize;
     int taskReportFlag;
     int exitFlag;
     
@@ -51,6 +52,6 @@ typedef struct TaskRunnerManager{
     ECMessageBuffer_t *readMsgBuffer;
 }TaskRunnerManager_t;
 
-void runTask(char *IPAddr, int port, int taskType);
+void runTask(char *IPAddr, int port, int taskType, int fileSize);
 
 #endif /* TaskRunnerInstance_h */

@@ -3,7 +3,7 @@ LIBS = -pthread -lm
 CFLAGS = -Wall $(OPTFLAGS) $(LIBS)  -L/usr/local/lib
 
 TARGET = taskDistributor
-OBJS = TaskDistributor.o TaskRunner.o TaskGenerator.o TaskDistributorUtilities.o TaskRunnerInstance.o TaskNetUtilities.o TaskListener.o MessageBuffer.o
+OBJS = TaskDistributor.o TaskRunner.o TaskGenerator.o TaskDistributorUtilities.o TaskRunnerInstance.o TaskNetUtilities.o TaskListener.o MessageBuffer.o strUtils.o
 
 ALL = $(OBJS) $(TARGET)
 all: $(ALL)
@@ -16,10 +16,12 @@ $(TARGET): $(OBJS)
 TaskDistributor.o: TaskRunner.h
 TaskRunner.o: TaskRunner.h TaskDistributorCommon.h
 TaskDistributorUtilities.o: TaskDistributorUtilities.h
-TaskRunnerInstance.o: TaskRunnerInstance.h
+TaskRunnerInstance.o: TaskRunnerInstance.h strUtils.h
 TaskNetUtilities.o: TaskNetUtilities.h
 TaskListener.o: TaskListener.h
 MessageBuffer.o: MessageBuffer.h
+strUtils.o: strUtils.h
+MeanVarCal.o: MeanVarCal.h
 
 .PHONY : clean
 clean:

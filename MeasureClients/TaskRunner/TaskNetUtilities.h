@@ -19,7 +19,9 @@ int create_bind_listen(int port);
 
 int connectToIPPort(char *IPAddr, int port);
 
+int update_event(int efd, uint32_t opFlag, int fd, void *arg);
 int add_event(int efd, uint32_t opFlag, int fd, void *arg);
+int delete_event(int efd, int fd);
 
 ssize_t readSockData(int sockFd, char *buf, size_t bufSize);
 

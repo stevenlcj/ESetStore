@@ -31,7 +31,7 @@ void addWriteEvent(TaskListener_t *taskListener, TaskRunnerInstance_t *runnerIns
     }
     
     runnerInstance->connState = CLIENT_CONN_STATE_READWRITE;
-    update_event(taskListener->eFd, EPOLLIN | EPOLLOUT , runnerInstance->sockFd, ecClientPtr);
+    update_event(taskListener->eFd, EPOLLIN | EPOLLOUT , runnerInstance->sockFd, taskListener);
 }
 
 void removeWriteEvent(TaskListener_t *taskListener, TaskRunnerInstance_t *runnerInstance){
@@ -40,7 +40,7 @@ void removeWriteEvent(TaskListener_t *taskListener, TaskRunnerInstance_t *runner
         return;
     }
     
-    update_event(taskListener->eFd, EPOLLIN , runnerInstance->sockFd, ecClientPtr);
+    update_event(taskListener->eFd, EPOLLIN , runnerInstance->sockFd, taskListener);
     runnerInstance->connState = CLIENT_CONN_STATE_READ;
 }
 
@@ -187,7 +187,7 @@ int processingRunnerInMsg(TaskListener_t *taskListener, TaskRunnerInstance_t *ta
             taskRunnerInstance->curTask = dequeueTask(taskMgr);
             if (taskRunnerInstance->curTask != NULL) {
                 prepareSendingTask(taskRunnerInstance);
-                writeDataToRunner(taskListener, runnerInstances);
+                writeDataToRunner(taskListener, taskRunnerInstance);
             }
             
             return 1;
@@ -207,7 +207,7 @@ void startDistributingTasks(TaskListener_t *taskListener, TaskRunnerInstance_t *
     
     if (events == NULL) {
         perror("unable to alloc memory for events");
-        return -1;
+        return ;
     }
     
     for (idx = 0; idx < taskListener->clientNum; ++idx) {
@@ -233,6 +233,8 @@ void startDistributingTasks(TaskListener_t *taskListener, TaskRunnerInstance_t *
     }
 
 do{
+    int eventsNum =epoll_wait(taskRunnerMgr->efd, events, MAX_CONN_EVENTS,DEFAULT_ACCEPT_TIME_OUT_IN_MLSEC);
+
     for (idx = 0 ; idx < eventsNum; ++idx) {
         if((events[idx].events & EPOLLERR)||
            (events[idx].events & EPOLLHUP)||
@@ -243,7 +245,7 @@ do{
         }else{
             TaskRunnerInstance_t *taskRunnerInstance = (TaskRunnerInstance_t *)events[idx].data.ptr;
             if (events[idx].events & EPOLLOUT) {
-                writeDataToRunner(taskListener, taskRunnerInstance, &writeSize);
+                writeDataToRunner(taskListener, taskRunnerInstance);
             }else{
                 processingRunnerInMsg(taskListener, taskRunnerInstance,taskMgr);
             }

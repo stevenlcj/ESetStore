@@ -13,6 +13,7 @@
 void prepareSendingTask(TaskRunnerInstance_t *taskRunnerInstance){
     gettimeofday(&taskRunnerInstance->curTask->startTime, NULL);
     sprintf(taskRunnerInstance->writeMsgBuf->buf, "%s\r\n",taskRunnerInstance->curTask->taskStr);
+    printf("Idx:%d, Sending task:%s\n",taskRunnerInstance->idx, taskRunnerInstance->writeMsgBuf->buf);
     taskRunnerInstance->writeMsgBuf->wOffset = strlen(taskRunnerInstance->writeMsgBuf->buf);
     taskRunnerInstance->sendedTask  = 0;
 }

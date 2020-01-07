@@ -23,6 +23,7 @@ typedef enum {
 }CLIENT_CONN_STATE;
 
 typedef struct TaskRunnerInstance{
+    int idx;
     int sockFd;
     int sendedTask;
     char *IPAddr;

@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
+int make_non_blocking_sock(int sfd);
 
 int create_TCP_sockFd();
 int create_epollfd();

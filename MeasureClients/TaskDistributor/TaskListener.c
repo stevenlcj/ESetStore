@@ -149,6 +149,8 @@ int acceptRunnerInstances(TaskListener_t *taskListener, TaskRunnerInstance_t *ru
                     fprintf(stderr,"epoll error event id:%d\n", events[idx].events);
             }else{
                 TaskRunnerInstance_t *taskRunnerInstance = runnerInstances + acceptedClientNum;
+                taskRunnerInstance->idx = acceptedClientNum;
+                
                 struct sockaddr_in remoteAddr;
                 socklen_t nAddrlen = sizeof(remoteAddr);
                 taskRunnerInstance->sockFd = accept(taskListener->listenFd, (struct sockaddr *)&remoteAddr, &nAddrlen);
@@ -159,6 +161,8 @@ int acceptRunnerInstances(TaskListener_t *taskListener, TaskRunnerInstance_t *ru
                 
                 taskRunnerInstance->readMsgBuf = createMessageBuf(DEFAULT_MESSAGE_BUFFER_SIZE);
                 taskRunnerInstance->writeMsgBuf = createMessageBuf(DEFAULT_MESSAGE_BUFFER_SIZE);
+                
+                make_non_blocking_sock(taskRunnerInstance->sockFd);
                 
                 ++acceptedClientNum;
             }
@@ -233,7 +237,7 @@ void startDistributingTasks(TaskListener_t *taskListener, TaskRunnerInstance_t *
     }
 
 do{
-    int eventsNum =epoll_wait(taskRunnerMgr->efd, events, MAX_CONN_EVENTS,DEFAULT_ACCEPT_TIME_OUT_IN_MLSEC);
+    int eventsNum =epoll_wait(taskListener->eFd, events, MAX_CONN_EVENTS,DEFAULT_ACCEPT_TIME_OUT_IN_MLSEC);
 
     for (idx = 0 ; idx < eventsNum; ++idx) {
         if((events[idx].events & EPOLLERR)||
@@ -255,4 +259,5 @@ do{
 }while(taskMgr->doneTasksNum != totalTasks);
     
     
+    calThroughPut(taskMgr);
 }

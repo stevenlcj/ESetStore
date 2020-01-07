@@ -48,9 +48,9 @@ void removeWriteEvent(TaskRunnerManager_t *taskRunnerMgr){
 
 
 int writeDataToDistributor(TaskRunnerManager_t *taskRunnerMgr){
-    ECMessageBuffer_t *writeMsgBuf = taskRunnerMgr->writeMsgBuf;
+    ECMessageBuffer_t *writeMsgBuf = taskRunnerMgr->writeMsgBuffer;
     
-    while (taskRunnerMgr->writeMsgBuf->rOffset != taskRunnerMgr->writeMsgBuf->wOffset ) {
+    while (taskRunnerMgr->writeMsgBuffer->rOffset != taskRunnerMgr->writeMsgBuffer->wOffset ) {
         
         ssize_t wSize = send(taskRunnerMgr->sockFd,  writeMsgBuf->buf+ writeMsgBuf->rOffset, (writeMsgBuf->wOffset-writeMsgBuf->rOffset), 0);
         
@@ -78,17 +78,10 @@ int writeDataToDistributor(TaskRunnerManager_t *taskRunnerMgr){
 }
 
 int isCmdRecvd(char *buf, size_t bufSize){
-    int idx = 0;
-    char suffixBuf[] = "\r\n";
-    size_t suffixLen = strlen(suffixBuf);
-    
-    while ((idx+suffixLen) >= bufSize) {
-        if(strncmp(suffixBuf, buf + idx, suffixLen) == 0 ){
-            return 1;
-        }
-        ++idx;
-    }
 
+    char suffixBuf[] = "\r\n";
+    return hasSubstr(buf, suffixBuf, bufSize);
+    
     return 0;
 }
 
@@ -259,7 +252,7 @@ void runTask(char *IPAddr, int port, int taskType, int fileSize){
     }
     
     taskRunnerMgr->taskType = taskType;
-    taskRunnerMgr->fileSize = fileSize
+    taskRunnerMgr->fileSize = fileSize;
     
     taskRunnerMgr->runnerInstance = talloc(TaskRunnerInstance_t, 1);
     memset(taskRunnerMgr->runnerInstance, 0, sizeof(TaskRunnerInstance_t));

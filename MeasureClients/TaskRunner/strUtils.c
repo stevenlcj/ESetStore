@@ -96,3 +96,18 @@ void writeToBuf(char *desBuf, char *srcBuf, size_t *writeSize, size_t *writeOffs
     memcpy((desBuf + *writeOffset), srcBuf, *writeSize);
     *writeOffset = *writeOffset + *writeSize;
 }
+
+int hasSubstr(char *buf, char *str, size_t bufSize){
+    size_t strSize = strlen(str);
+    int idx = 0;
+    
+    while ((idx + strSize) < bufSize) {
+        if (strncmp(buf+idx, str, strSize) == 0) {
+            return 1;
+        }
+        
+        ++idx;
+    }
+    
+    return 0;
+}

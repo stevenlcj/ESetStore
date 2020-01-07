@@ -14,6 +14,6 @@
 #include <sys/time.h>
 
 long str_to_Long(char *buf);
-size_t getLongValueBetweenStrs(const char *str1, const char *str2, const char *str);
+long getLongValueBetweenStrs(const char *str1, const char *str2, const char *str);
 
 #endif /* strUtils_h */

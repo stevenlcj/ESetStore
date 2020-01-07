@@ -39,4 +39,5 @@ void runTasks(int startIdx, int endIdx, int clientNums, int portToListen, int ta
     
     TaskRunnerManager_t *taskRunnerMgr = initTaskRunnerManager(startIdx, endIdx, clientNums, portToListen, taskType);
     acceptRunnerInstances(taskRunnerMgr->taskListener, taskRunnerMgr->taskRunnerInstances);
+    startDistributingTasks(taskRunnerMgr->taskListener, taskRunnerMgr->taskRunnerInstances, taskRunnerMgr->taskMgr);
 }

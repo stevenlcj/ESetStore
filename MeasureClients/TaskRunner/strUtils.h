@@ -14,9 +14,11 @@
 #include <sys/time.h>
 
 long str_to_Long(char *buf);
-size_t getLongValueBetweenStrs(const char *str1, const char *str2, const char *str);
+long getLongValueBetweenStrs(const char *str1, const char *str2, const char *str);
 
 size_t uint64_to_str(uint64_t value, char *buf, size_t bufSize);
 void writeToBuf(char *desBuf, char *srcBuf, size_t *writeSize, size_t *writeOffset);
+
+int hasSubstr(char *buf, char *str, size_t bufSize);
 
 #endif /* strUtils_h */

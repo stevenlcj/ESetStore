@@ -101,7 +101,7 @@ int hasSubstr(char *buf, char *str, size_t bufSize){
     size_t strSize = strlen(str);
     int idx = 0;
     
-    while ((idx + strSize) < bufSize) {
+    while ((idx + strSize) <= bufSize) {
         if (strncmp(buf+idx, str, strSize) == 0) {
             return 1;
         }

@@ -76,7 +76,7 @@ int writeDataToRunner(TaskListener_t *taskListener, TaskRunnerInstance_t *runner
     return 0;
 }
 
-int recvDataFromRunner(TaskListener_t *taskListener, TaskRunnerInstance_t *runnerInstance){
+int recvDataFromRunner(TaskListener_t *taskListener, TaskRunnerInstance_t *runnerInstance,int *readSize){
     ECMessageBuffer_t *rMsgBuf = runnerInstance->readMsgBuf;
     ssize_t recvdSize = recv(runnerInstance->sockFd, (void *)(rMsgBuf->buf + rMsgBuf->wOffset), (rMsgBuf->bufSize-rMsgBuf->wOffset), 0);
     
@@ -89,7 +89,7 @@ int recvDataFromRunner(TaskListener_t *taskListener, TaskRunnerInstance_t *runne
     
     if (recvdSize >= 0)
     {
-        //*readSize = *readSize + (size_t)recvdSize;
+        *readSize = *readSize + (size_t)recvdSize;
         rMsgBuf->wOffset = rMsgBuf->wOffset + (size_t)recvdSize;
     }
     
@@ -177,7 +177,10 @@ int acceptRunnerInstances(TaskListener_t *taskListener, TaskRunnerInstance_t *ru
 
 
 int processingRunnerInMsg(TaskListener_t *taskListener, TaskRunnerInstance_t *taskRunnerInstance,TaskManager_t *taskMgr){
-    if (recvDataFromRunner(taskListener, taskRunnerInstance) == 0) {
+    int readSize=0;
+    recvDataFromRunner(taskListener, taskRunnerInstance, &readSize);
+    
+    if (readSize == 0) {
         printf("Sock closed from:%s\n",taskRunnerInstance->IPAddr);
         delete_event(taskListener->eFd, taskRunnerInstance->sockFd);
         close(taskRunnerInstance->sockFd);
@@ -233,7 +236,7 @@ void startDistributingTasks(TaskListener_t *taskListener, TaskRunnerInstance_t *
         }
     
         prepareSendingTask(taskRunnerInstance);
-        writeDataToRunner(taskListener, runnerInstances);
+        writeDataToRunner(taskListener, taskRunnerInstance);
     }
 
 do{

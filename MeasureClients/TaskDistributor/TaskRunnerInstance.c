@@ -24,7 +24,7 @@ int canParseRunnerInMsg(TaskRunnerInstance_t *taskRunnerInstance){
     size_t strLen = strlen(suffixStr);
     ECMessageBuffer_t *curMsgBuf = taskRunnerInstance->readMsgBuf;
     
-    while (curMsgBuf->wOffset > (idx + strLen)) {
+    while (curMsgBuf->wOffset >= (idx + strLen)) {
         if (strncmp(curMsgBuf->buf + idx, suffixStr, strLen) == 0) {
             curMsgBuf->buf[curMsgBuf->wOffset] = '\0';
             return 1;
@@ -35,9 +35,9 @@ int canParseRunnerInMsg(TaskRunnerInstance_t *taskRunnerInstance){
     return 0;
 }
 
-//"StartSec:...\rStartUSec:...EndSec:...\rEndUSec:...\rFileSize:...\r\n"
+//"StartSec:...StartUSec:...EndSec:...\rEndUSec:...\rFileSize:...\r\n"
 void parseRunnerInMsg(TaskRunnerInstance_t *taskRunnerInstance){
-    char suffixStr[] = "\r";
+    char suffixStr[] = "\r\n";
     char startSecStr[] = "StartSec:";
     char startUSecStr[] = "StartUSec:";
     char endSecStr[] = "EndSec:";
@@ -49,10 +49,10 @@ void parseRunnerInMsg(TaskRunnerInstance_t *taskRunnerInstance){
     ECMessageBuffer_t *curMsgBuf = taskRunnerInstance->readMsgBuf;
     printf("Get:%s\n",curMsgBuf->buf);
 
-    taskRunnerInstance->curTask->runnerStartTime.tv_sec = getLongValueBetweenStrs(curMsgBuf->buf, startSecStr, suffixStr);
-    taskRunnerInstance->curTask->runnerStartTime.tv_usec = getLongValueBetweenStrs(curMsgBuf->buf, startUSecStr, suffixStr);
-    taskRunnerInstance->curTask->runnerEndTime.tv_sec = getLongValueBetweenStrs(curMsgBuf->buf, endSecStr, suffixStr);
-    taskRunnerInstance->curTask->runnerEndTime.tv_usec = getLongValueBetweenStrs(curMsgBuf->buf, endUSecStr, suffixStr);
+    taskRunnerInstance->curTask->runnerStartTime.tv_sec = getLongValueBetweenStrs(curMsgBuf->buf, startSecStr, startUSecStr);
+    taskRunnerInstance->curTask->runnerStartTime.tv_usec = getLongValueBetweenStrs(curMsgBuf->buf, startUSecStr, endSecStr);
+    taskRunnerInstance->curTask->runnerEndTime.tv_sec = getLongValueBetweenStrs(curMsgBuf->buf, endSecStr, endUSecStr);
+    taskRunnerInstance->curTask->runnerEndTime.tv_usec = getLongValueBetweenStrs(curMsgBuf->buf, endUSecStr, fileSizeStr);
     taskRunnerInstance->curTask->taskSize = getLongValueBetweenStrs(curMsgBuf->buf, fileSizeStr, suffixStr);
 }
 

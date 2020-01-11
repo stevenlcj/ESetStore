@@ -27,10 +27,10 @@ TaskRunnerManager_t *initTaskRunnerManager(int startIdx, int endIdx, int clientN
     
     
     
-    Task_t *theTask = NULL;
+    /*Task_t *theTask = NULL;
     while ((theTask = dequeueTask(taskRunnerMgr->taskMgr)) != NULL) {
         printf("Task:%s\n",theTask->taskStr);
-    }
+    }*/
     
     return taskRunnerMgr;
 }

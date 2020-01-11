@@ -54,7 +54,7 @@ int writeDataToDistributor(TaskRunnerManager_t *taskRunnerMgr){
         
         ssize_t wSize = send(taskRunnerMgr->sockFd,  writeMsgBuf->buf+ writeMsgBuf->rOffset, (writeMsgBuf->wOffset-writeMsgBuf->rOffset), 0);
         
-        //printf("wOffset:%lu, rOffset:%lu send size:%ld to client\n",ecClientPtr->writeMsgBuf->wOffset, ecClientPtr->writeMsgBuf->rOffset, wSize);
+        printf("wOffset:%lu, rOffset:%lu send size:%ld to distributor\n",writeMsgBuf->wOffset, writeMsgBuf->rOffset, wSize);
         
         if (wSize <= 0) {
             addWriteEvent(taskRunnerMgr);
@@ -103,7 +103,6 @@ void deallocTaskRunner(TaskRunnerManager_t *taskRunnerMgr){
 
 void constructTaskDoneCmd(TaskRunnerManager_t *taskRunnerMgr, TaskRunnerTask_t *theTask){
     char startSecStr[] = "StartSec:";
-    char sufCh = '\r';
     char startUSecStr[] = "StartUSec:";
     char endSecStr[] = "EndSec:";
     char endUSecStr[] = "EndUSec:";
@@ -115,37 +114,31 @@ void constructTaskDoneCmd(TaskRunnerManager_t *taskRunnerMgr, TaskRunnerTask_t *
     ECMessageBuffer_t *writeMsgBuffer= taskRunnerMgr->writeMsgBuffer;
     
     size_t writeSize;
+    int idx;
     writeToBuf(writeMsgBuffer->buf, startSecStr, &writeSize, &writeMsgBuffer->wOffset);
     uint64_to_str((uint64_t)theTask->startTime.tv_sec, tempStr, 1024);
-    writeToBuf(writeMsgBuffer->buf+writeMsgBuffer->wOffset, tempStr, &writeSize, &writeMsgBuffer->wOffset);
-    writeMsgBuffer->buf[writeMsgBuffer->wOffset] = sufCh;
-    writeMsgBuffer->wOffset = writeMsgBuffer->wOffset + 1;
+    writeToBuf(writeMsgBuffer->buf, tempStr, &writeSize, &writeMsgBuffer->wOffset);
     
     writeToBuf(writeMsgBuffer->buf, startUSecStr, &writeSize, &writeMsgBuffer->wOffset);
     uint64_to_str((uint64_t)theTask->startTime.tv_usec, tempStr, 1024);
-    writeToBuf(writeMsgBuffer->buf+writeMsgBuffer->wOffset, tempStr, &writeSize, &writeMsgBuffer->wOffset);
-    writeMsgBuffer->buf[writeMsgBuffer->wOffset] = sufCh;
-    writeMsgBuffer->wOffset = writeMsgBuffer->wOffset + 1;
+    writeToBuf(writeMsgBuffer->buf, tempStr, &writeSize, &writeMsgBuffer->wOffset);
 
     writeToBuf(writeMsgBuffer->buf, endSecStr, &writeSize, &writeMsgBuffer->wOffset);
     uint64_to_str((uint64_t)theTask->endTime.tv_sec, tempStr, 1024);
-    writeToBuf(writeMsgBuffer->buf+writeMsgBuffer->wOffset, tempStr, &writeSize, &writeMsgBuffer->wOffset);
-    writeMsgBuffer->buf[writeMsgBuffer->wOffset] = sufCh;
-    writeMsgBuffer->wOffset = writeMsgBuffer->wOffset + 1;
+    writeToBuf(writeMsgBuffer->buf, tempStr, &writeSize, &writeMsgBuffer->wOffset);
 
     writeToBuf(writeMsgBuffer->buf, endUSecStr, &writeSize, &writeMsgBuffer->wOffset);
     uint64_to_str((uint64_t)theTask->endTime.tv_usec, tempStr, 1024);
-    writeToBuf(writeMsgBuffer->buf+writeMsgBuffer->wOffset, tempStr, &writeSize, &writeMsgBuffer->wOffset);
-    writeMsgBuffer->buf[writeMsgBuffer->wOffset] = sufCh;
-    writeMsgBuffer->wOffset = writeMsgBuffer->wOffset + 1;
-    
+    writeToBuf(writeMsgBuffer->buf, tempStr, &writeSize, &writeMsgBuffer->wOffset);
+
     writeToBuf(writeMsgBuffer->buf, fileSizeStr, &writeSize, &writeMsgBuffer->wOffset);
     uint64_to_str((uint64_t)taskRunnerMgr->fileSize, tempStr, 1024);
-    writeToBuf(writeMsgBuffer->buf+writeMsgBuffer->wOffset, tempStr, &writeSize, &writeMsgBuffer->wOffset);
-    writeToBuf(writeMsgBuffer->buf+writeMsgBuffer->wOffset, suffixStr, &writeSize, &writeMsgBuffer->wOffset);
+    writeToBuf(writeMsgBuffer->buf, tempStr, &writeSize, &writeMsgBuffer->wOffset);
+    writeToBuf(writeMsgBuffer->buf, suffixStr, &writeSize, &writeMsgBuffer->wOffset);
     writeMsgBuffer->buf[writeMsgBuffer->wOffset] = '\0';
-    printf("Msg to write:%s\n",writeMsgBuffer->buf);
-    
+    printf("wOffset:%lu, Msg to write:%s",writeMsgBuffer->wOffset,writeMsgBuffer->buf);
+    printf("\n");
+
 }
 
 //Send cmd:"StartSec:...\rStartUSec:...\rEndSec:...\rEndUSec:...\rFileSize:\r\n"
@@ -211,6 +204,7 @@ void waitTask(TaskRunnerManager_t *taskRunnerMgr){
     
     while (taskRunnerMgr->exitFlag == 0) {
         int eventsNum =epoll_wait(taskRunnerMgr->efd, events, MAX_CONN_EVENTS,DEFAULT_ACCEPT_TIME_OUT_IN_MLSEC);
+        printf("Evnts:%d\n",eventsNum);
         int idx;
         for (idx = 0 ; idx < eventsNum; ++idx) {
             if((events[idx].events & EPOLLERR)||
@@ -219,6 +213,7 @@ void waitTask(TaskRunnerManager_t *taskRunnerMgr){
             {
                 printf("EPOLLERR %d EPOLLHUP:%d EPOLLIN:%d EPOLLOUT:%d\n ",EPOLLERR, EPOLLHUP, EPOLLIN, EPOLLOUT);
                 fprintf(stderr,"epoll error event id:%d\n", events[idx].events);
+                taskRunnerMgr->exitFlag = 1;
             }else{
                 if (events[idx].events & EPOLLIN) {
                     ssize_t readedDataSize = readTheData(taskRunnerMgr);
@@ -229,7 +224,7 @@ void waitTask(TaskRunnerManager_t *taskRunnerMgr){
                     }
                     parseTask(taskRunnerMgr);
                 }else{
-                    
+                    writeDataToDistributor(taskRunnerMgr);
                 }
             }
         }

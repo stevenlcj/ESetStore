@@ -54,7 +54,7 @@ int writeDataToDistributor(TaskRunnerManager_t *taskRunnerMgr){
         
         ssize_t wSize = send(taskRunnerMgr->sockFd,  writeMsgBuf->buf+ writeMsgBuf->rOffset, (writeMsgBuf->wOffset-writeMsgBuf->rOffset), 0);
         
-        printf("wOffset:%lu, rOffset:%lu send size:%ld to distributor\n",writeMsgBuf->wOffset, writeMsgBuf->rOffset, wSize);
+//        printf("wOffset:%lu, rOffset:%lu send size:%ld to distributor\n",writeMsgBuf->wOffset, writeMsgBuf->rOffset, wSize);
         
         if (wSize <= 0) {
             addWriteEvent(taskRunnerMgr);
@@ -114,7 +114,7 @@ void constructTaskDoneCmd(TaskRunnerManager_t *taskRunnerMgr, TaskRunnerTask_t *
     ECMessageBuffer_t *writeMsgBuffer= taskRunnerMgr->writeMsgBuffer;
     
     size_t writeSize;
-    int idx;
+
     writeToBuf(writeMsgBuffer->buf, startSecStr, &writeSize, &writeMsgBuffer->wOffset);
     uint64_to_str((uint64_t)theTask->startTime.tv_sec, tempStr, 1024);
     writeToBuf(writeMsgBuffer->buf, tempStr, &writeSize, &writeMsgBuffer->wOffset);
@@ -204,7 +204,6 @@ void waitTask(TaskRunnerManager_t *taskRunnerMgr){
     
     while (taskRunnerMgr->exitFlag == 0) {
         int eventsNum =epoll_wait(taskRunnerMgr->efd, events, MAX_CONN_EVENTS,DEFAULT_ACCEPT_TIME_OUT_IN_MLSEC);
-        printf("Evnts:%d\n",eventsNum);
         int idx;
         for (idx = 0 ; idx < eventsNum; ++idx) {
             if((events[idx].events & EPOLLERR)||
@@ -213,6 +212,7 @@ void waitTask(TaskRunnerManager_t *taskRunnerMgr){
             {
                 printf("EPOLLERR %d EPOLLHUP:%d EPOLLIN:%d EPOLLOUT:%d\n ",EPOLLERR, EPOLLHUP, EPOLLIN, EPOLLOUT);
                 fprintf(stderr,"epoll error event id:%d\n", events[idx].events);
+                perror("What happened");
                 taskRunnerMgr->exitFlag = 1;
             }else{
                 if (events[idx].events & EPOLLIN) {

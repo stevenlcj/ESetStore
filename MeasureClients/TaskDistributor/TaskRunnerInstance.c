@@ -48,11 +48,13 @@ void parseRunnerInMsg(TaskRunnerInstance_t *taskRunnerInstance){
 
     ECMessageBuffer_t *curMsgBuf = taskRunnerInstance->readMsgBuf;
     printf("Get:%s\n",curMsgBuf->buf);
-
-    taskRunnerInstance->curTask->runnerStartTime.tv_sec = getLongValueBetweenStrs(curMsgBuf->buf, startSecStr, startUSecStr);
-    taskRunnerInstance->curTask->runnerStartTime.tv_usec = getLongValueBetweenStrs(curMsgBuf->buf, startUSecStr, endSecStr);
-    taskRunnerInstance->curTask->runnerEndTime.tv_sec = getLongValueBetweenStrs(curMsgBuf->buf, endSecStr, endUSecStr);
-    taskRunnerInstance->curTask->runnerEndTime.tv_usec = getLongValueBetweenStrs(curMsgBuf->buf, endUSecStr, fileSizeStr);
-    taskRunnerInstance->curTask->taskSize = getLongValueBetweenStrs(curMsgBuf->buf, fileSizeStr, suffixStr);
+    
+    taskRunnerInstance->curTask->runnerStartTime.tv_sec = getLongValueBetweenStrs(startSecStr, startUSecStr,curMsgBuf->buf);
+    taskRunnerInstance->curTask->runnerStartTime.tv_usec = getLongValueBetweenStrs(startUSecStr, endSecStr,curMsgBuf->buf);
+    taskRunnerInstance->curTask->runnerEndTime.tv_sec = getLongValueBetweenStrs(endSecStr, endUSecStr,curMsgBuf->buf);
+    taskRunnerInstance->curTask->runnerEndTime.tv_usec = getLongValueBetweenStrs(endUSecStr, fileSizeStr,curMsgBuf->buf);
+    taskRunnerInstance->curTask->taskSize = getLongValueBetweenStrs(fileSizeStr, suffixStr,curMsgBuf->buf);
+    
+    curMsgBuf->wOffset = 0;
 }
 

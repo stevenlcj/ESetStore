@@ -150,7 +150,7 @@ void calThroughPut(TaskManager_t *mgr){
         *(mgr->tasksDoneTimeConsumes + idx) = getTimeIntervalInMS(taskPtr->startTime, taskPtr->endTime);
         *(mgr->tasksDoneTimeThroughput + idx) = (double) taskPtr->taskSize * 1000.0 / *(mgr->tasksDoneTimeConsumes + idx)/1024.0/1024.0;
         
-        mgr->totalFileSize = (uint64_t)taskPtr->taskSize;
+        mgr->totalFileSize = mgr->totalFileSize + (uint64_t)taskPtr->taskSize;
         taskPtr = taskPtr->next;
     }
     
@@ -162,9 +162,9 @@ void calThroughPut(TaskManager_t *mgr){
     mgr->doneTimeMeanThroughput = calMeanValue(mgr->tasksDoneTimeThroughput, mgr->doneTasksNum);
     mgr->doneTimethroughputVariance = calVarValue(mgr->tasksDoneTimeThroughput, mgr->doneTasksNum);
 
-    printf("Total Time Consume:%fms, Total File Size:%fMB, Total Throughput:%fMB/s\n",mgr->totalTimeConsume, (double)mgr->totalThroughput/1024.0/1024.0, mgr->totalThroughput);
-    printf("Run Time throughput:%fms, Run Time variance:%f\n",mgr->runTimeMeanThroughput, mgr->runTimethroughputVariance);
-    printf("Done Time throughput:%fms, Done Time variance:%f\n",mgr->doneTimeMeanThroughput, mgr->doneTimethroughputVariance);
+    printf("Total Time Consume:%fms, Total File Size:%fMB, Total Throughput:%fMB/s\n",mgr->totalTimeConsume, (double)mgr->totalFileSize/1024.0/1024.0, mgr->totalThroughput);
+    printf("Run Time throughput:%fMB/s, Run Throughput variance:%f\n",mgr->runTimeMeanThroughput, mgr->runTimethroughputVariance);
+    printf("Done Time throughput:%fMB/s, Done Throughput variance:%f\n",mgr->doneTimeMeanThroughput, mgr->doneTimethroughputVariance);
     
 }
 

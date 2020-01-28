@@ -120,6 +120,23 @@ TaskManager_t *generateCephTasks(int startIdx, int endIdx){
     mgr->taskDoneHeader = NULL;
     mgr->taskDoneTail = NULL;
     
+    char cmdStr[]= "sudo rados --pool=ecpool get file\0";
+    size_t cmdStrLen = strlen(cmdStr);
+    size_t cmdLen = cmdStrLen + 5;
+    
+    int idx;
+    for (idx = startIdx; idx <= endIdx; ++idx) {
+        size_t curCmdLen = 0;
+        char *curCmd = talloc(char, cmdLen);
+        memset(curCmd, 0, cmdLen);
+        memcpy(curCmd, cmdStr, cmdStrLen);
+        curCmdLen = cmdStrLen;
+        curCmdLen = curCmdLen + numToStr(curCmd + curCmdLen , idx);
+        *(curCmd + curCmdLen) = '\0';
+        Task_t *tTask = createTask(curCmd);
+        enqueueTask(mgr, tTask);
+    }
+
     return mgr;
 }
 
@@ -127,6 +144,11 @@ TaskManager_t *generateTasks(int startIdx, int endIdx, int taskType){
     
     if (taskType == 0) {
         return generateESetStoreTasks(startIdx, endIdx);
+    }else if(taskType == 1){
+        return generateCephTasks(startIdx, endIdx);
+    }else{
+        printf("Unknow task for taskType:%d\n",taskType);
+        return NULL;
     }
     
     return generateCephTasks(startIdx, endIdx);

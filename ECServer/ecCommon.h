@@ -25,7 +25,7 @@
 
 #define DEFAULT_READ_WRITE_BUF_SIZE (1*(1<<20)) //1 MB for conn read write buf
 
-#define DEFAULT_DISK_IO_JOB_STEP 10
+#define DEFAULT_DISK_IO_JOB_STEP 64
 #define DEFAULT_DISK_IO_JOB_BUF_SIZE (1<<18) //256 K
 
 #define DEFAULT_TIMEOUT_IN_Millisecond 500
@@ -38,7 +38,7 @@
 
 #define FILE_NAME_BUF_SIZE 1024
 
-#define MAX_CONN_EVENTS 8
+#define MAX_CONN_EVENTS MAX_EVENTS
 
 #define DEFAUT_MESSGAE_READ_WRITE_BUF 1024
 

@@ -119,21 +119,21 @@ static IOR_offset_t ESetStore_Xfer(int access, void *fd, IOR_size_t * buffer,
                                    IOR_offset_t length, IOR_param_t * param)
 {
     int ret;
-    int fileFd = (int )*fd;
-    
+    int *fileFd = (int *)fd;
+
     if (access == WRITE)
     {
-        writeFile(clientEngine, fileFd, buffer, length);
+        writeFile(clientEngine, *fileFd, buffer, length);
     }else{
-        readFile(clientEngine, fileFd, buffer, length);
+        readFile(clientEngine, *fileFd, buffer, length);
     }
     return length;
 }
 
 static void ESetStore_Close(void *fd, IOR_param_t * param)
 {
-    int fileFd = (int )*fd;
-    closeFile(clientEngine,  fileFd);
+    int *fileFd = (int *)fd;
+    closeFile(clientEngine,  *fileFd);
     finalizeClient();
     return;
 }

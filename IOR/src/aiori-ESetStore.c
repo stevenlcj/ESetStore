@@ -28,11 +28,6 @@
 #include "aiori.h"
 #include "iordef.h"
 
-#include <curl/curl.h>
-
-#include <libxml/parser.h>      // from libxml2
-#include <libxml/tree.h>
-
 #include "ECClientEngine.h"
 
 #define DEFAULT_BUF_SIZE (1024 * 1024)

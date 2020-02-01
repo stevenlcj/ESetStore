@@ -188,7 +188,7 @@ static int ESetStore_Access(const char *oid, int mode, IOR_param_t *param){
     return 0;
 }
 
-static int ESetStore_Stat(const char *, struct stat *, IOR_param_t *){
+static int ESetStore_Stat(const char *oid, struct stat *buf, IOR_param_t *param){
     WARN("stat not supported in ESetStore backend!");
     return -1;
 }

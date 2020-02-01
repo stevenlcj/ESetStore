@@ -67,7 +67,7 @@ ior_aiori_t esetstore_aiori = {
     .stat = ESetStore_Stat,
 };
 
-void conectToMetaServer(){
+void connectToMetaServer(){
     if (clientEngine == NULL) {
         char *IPAddrStr=getenv("ESetStoreMetaIP");
         char *PortStr=getenv("ESetStoreMetaPort");
@@ -119,21 +119,21 @@ static IOR_offset_t ESetStore_Xfer(int access, void *fd, IOR_size_t * buffer,
                                    IOR_offset_t length, IOR_param_t * param)
 {
     int ret;
-    char *oid = (char *)fd;
+    int fileFd = (int *)fd;
     
     if (access == WRITE)
     {
-        writeFile(clientEngine, *fd, buffer, length);
+        writeFile(clientEngine, fileFd, buffer, length);
     }else{
-        readFile(clientEngine, *fd, buffer, length);
+        readFile(clientEngine, fileFd, buffer, length);
     }
     return length;
 }
 
 static void ESetStore_Close(void *fd, IOR_param_t * param)
 {
-    closeFile(clientEngine,  *fd);
-    free(fd);
+    int fileFd = (int *)fd;
+    closeFile(clientEngine,  fileFd);
     finalizeClient();
     return;
 }
@@ -152,7 +152,7 @@ static void ESetStore_Fsync(void *fd, IOR_param_t * param)
 static IOR_offset_t ESetStore_GetFileSize(IOR_param_t * test, MPI_Comm testComm, char *testFileName){
     connectToMetaServer();
     int fd = openFile(clientEngine, testFileName);
-    IOR_offset_t fileSize = (IOR_offset_t) getFileSize(clientEngine, ecGetContxt->ecFileFd);
+    IOR_offset_t fileSize = (IOR_offset_t) getFileSize(clientEngine, fd);
     closeFile(clientEngine, fd);
     finalizeClient();
     return fileSize;
@@ -164,7 +164,7 @@ static int ESetStore_StatFS(const char *oid, ior_aiori_statfs_t *stat_buf,
     return -1;
 }
 
-static int ESetStore_MkDir(const char *oid, IOR_param_t *param)
+static int ESetStore_MkDir(const char *oid, mode_t mode, IOR_param_t *param)
 {
     WARN("mkdir not supported in ESetStore backend!");
     return -1;
@@ -177,15 +177,15 @@ static int ESetStore_RmDir(const char *oid, IOR_param_t *param)
 }
 
 static int ESetStore_Access(const char *oid, int mode, IOR_param_t *param){
-    int ret = -1;
-    connectToMetaServer();
-    int fd = openFile(clientEngine, testFileName);
-    if (fd > 0) {
-        ret = 0;
-        closeFile(clientEngine, fd);
-    }
+//    int ret = -1;
+//    connectToMetaServer();
+//    int fd = openFile(clientEngine, testFileName);
+//    if (fd > 0) {
+//        ret = 0;
+//        closeFile(clientEngine, fd);
+//    }
     
-    return ret;
+    return 0;
 }
 
 static int ESetStore_Stat(const char *, struct stat *, IOR_param_t *){

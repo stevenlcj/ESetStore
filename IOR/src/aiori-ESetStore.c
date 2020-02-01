@@ -119,7 +119,7 @@ static IOR_offset_t ESetStore_Xfer(int access, void *fd, IOR_size_t * buffer,
                                    IOR_offset_t length, IOR_param_t * param)
 {
     int ret;
-    int fileFd = (int *)fd;
+    int fileFd = (int )*fd;
     
     if (access == WRITE)
     {
@@ -132,14 +132,14 @@ static IOR_offset_t ESetStore_Xfer(int access, void *fd, IOR_size_t * buffer,
 
 static void ESetStore_Close(void *fd, IOR_param_t * param)
 {
-    int fileFd = (int *)fd;
+    int fileFd = (int )*fd;
     closeFile(clientEngine,  fileFd);
     finalizeClient();
     return;
 }
 
 static void ESetStore_Delete(char *testFileName, IOR_param_t * param){
-    conectToMetaServer();
+    connectToMetaServer();
     deleteFile(clientEngine, testFileName);
     finalizeClient();
 }

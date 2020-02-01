@@ -97,8 +97,8 @@ endif
 
 if USE_ESetStore_AIORI
 extraLDADD    += -lESetClient
-extraLDADD    += -I${ESetSTORE_HOME}/include
-extraLDADD    += -L${ESetSTORE_HOME}/lib
+extraLDADD    += -I$/home/t716/ECStorage/include
+extraLDADD    += -L$/home/t716/ECStorage/lib
 extraSOURCES  += aiori-ESetStore.c
 endif
 

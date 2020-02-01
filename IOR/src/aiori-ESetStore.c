@@ -6,6 +6,11 @@
 //  Copyright © 2020 Shenzhen Technology University. All rights reserved.
 //
 
+/*
+ * This file implements the abstract I/O interface for ESetStore Client API.
+ */
+
+
 #include <stdio.h>
 
 #ifdef HAVE_CONFIG_H
@@ -18,11 +23,6 @@
 
 #include <errno.h>
 #include <assert.h>
-/*
- #ifdef HAVE_LUSTRE_LUSTRE_USER_H
- #include <lustre/lustre_user.h>
- #endif
- */
 
 #include "ior.h"
 #include "aiori.h"

@@ -123,9 +123,9 @@ static IOR_offset_t ESetStore_Xfer(int access, void *fd, IOR_size_t * buffer,
 
     if (access == WRITE)
     {
-        writeFile(clientEngine, *fileFd, buffer, length);
+        writeFile(clientEngine, *fileFd, (char *)buffer, length);
     }else{
-        readFile(clientEngine, *fileFd, buffer, length);
+        readFile(clientEngine, *fileFd, (char *)buffer, length);
     }
     return length;
 }

@@ -56,7 +56,7 @@ int createFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
         return -1;
     }
     
-    printf("Start create file cmd:%s\n", createCmd);
+//    printf("Start create file cmd:%s\n", createCmd);
     int fileFd = createECFile(clientEnginePtr->ecFileMgr, FileName);
     
     if (fileFd == -1) {
@@ -77,7 +77,7 @@ int createFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
     
     recvMetaReply(clientEnginePtr->metaSockFd, recvBuf, 1024);
     
-    printf("Recvd:%s ****from meta server\n", recvBuf);
+//    printf("Recvd:%s ****from meta server\n", recvBuf);
     
     char createOK[] ="CreateOK\0";
     if (strncmp(createOK, recvBuf, strlen(createOK)) != 0) {
@@ -99,7 +99,7 @@ int openFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
         return -1;
     }
     
-    printf("Start read file cmd:%s\n", openCmd);
+//    printf("Start open file cmd:%s\n", openCmd);
     int fileFd = createECFile(clientEnginePtr->ecFileMgr, FileName);
     
     if (fileFd == -1) {

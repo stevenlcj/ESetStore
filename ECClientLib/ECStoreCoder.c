@@ -12,6 +12,11 @@
 
 #include "jerasure.h"
 
+void printCoderWorkerMem(ECCoderWorker_t *coderWorker){
+    printf("coderWorker:%p\n",coderWorker);
+    printf("ecBlockWorkerMgr:%p\n",coderWorker->ecBlockWorkerMgr);
+}
+
 void performEncodingJob(ECCoderWorker_t *coderWorker, ECBlockWorkerManager_t *ecBlockWorkerMgr, ECFile_t *filePtr){
 
 	int bIdx = 0;
@@ -65,7 +70,7 @@ void performCodingJob(ECCoderWorker_t *coderWorker){
 			break;
 			default:
 				printf("Unknow job for coder\n");
-				exit(0);
+				//exit(0);
 		}
 
 	}
@@ -76,7 +81,7 @@ void *ecStoreCoderWorker(void *arg){
 
 	while(coderWorker->exitFlag == 0){
 		sem_wait(&coderWorker->jobStartSem);
-
+        printf("coderWorker->exitFlag:%d\n",coderWorker->exitFlag);
 		if (coderWorker->exitFlag == 1)
 		{
 			break;

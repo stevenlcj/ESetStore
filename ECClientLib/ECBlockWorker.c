@@ -252,7 +252,7 @@ ECBlockWorkerManager_t *createBlockWorkerMgr(int increSize){
 	ecBlockWorkerMgr->curFilePtr = NULL;
 
 	pthread_create(&ecBlockWorkerMgr->workerPid, NULL, threadBlockWorker , (void *)ecBlockWorkerMgr);
-	pthread_create(&ecBlockWorkerMgr->coderPid, NULL, ecStoreCoderWorker, ecBlockWorkerMgr->coderWorker);
+    pthread_create(&ecBlockWorkerMgr->coderPid, NULL, ecStoreCoderWorker, ecBlockWorkerMgr->coderWorker);
 	return ecBlockWorkerMgr;
 }
 
@@ -273,7 +273,8 @@ void deallocBlockWorkerMgr(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 
 	sem_post(&ecBlockWorkerMgr->jobStartSem);
 	sem_post(&coderWorker->jobStartSem);
-
+    pthread_join(ecBlockWorkerMgr->coderPid, NULL);//Wait coder thread exit before freeing
+    
 	deallocWorkerBufs(ecBlockWorkerMgr);
 
 	close(ecBlockWorkerMgr->eFd);
@@ -290,6 +291,8 @@ void deallocBlockWorkerMgr(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 
 	//printf("ecBlockWorkerMgr->blockWorkers\n");
 	free(ecBlockWorkerMgr->blockWorkers);
+    
+    pthread_join(coderWorker->pid, NULL);
 	deallocECCoderWorker(coderWorker);
 
 	sem_destroy(&ecBlockWorkerMgr->jobStartSem);
@@ -423,7 +426,6 @@ void removeUnConnected(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 		blockWorkerPtr = blockWorkerPtr->next;
 		++iterateNum;
 	}
-
 }
 
 void waitConnections(ECBlockWorkerManager_t *ecBlockWorkerMgr){
@@ -610,7 +612,7 @@ void allockBlockWorkersForDegradeRead(ECBlockWorkerManager_t *ecBlockWorkerMgr, 
 }
 
 void submitReadWriteJob(ECBlockWorkerManager_t *ecBlockWorkerMgr){
-	//printf("submitReadWriteJob\n");
+	printf("submitReadWriteJob\n");
 	sem_post(&ecBlockWorkerMgr->jobStartSem);
 }
 

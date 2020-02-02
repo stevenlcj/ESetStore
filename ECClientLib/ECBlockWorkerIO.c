@@ -135,7 +135,7 @@ void getBlockFd(ECBlockWorker_t *blockWorkerPtr){
 	char suffix[] = "\r\n\0";
 	blockWorkerPtr->blockFd = getIntValueBetweenStrings(fdStr, suffix, blockWorkerPtr->readMsgBuf->buf);
 
-	printf("get blockFd:%d\n", blockWorkerPtr->blockFd);
+//    printf("get blockFd:%d\n", blockWorkerPtr->blockFd);
 }
 
 int recvReplyFromBlockServer(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECBlockWorker_t *blockWorkerPtr){
@@ -284,15 +284,15 @@ void processingMonitoringRq(ECBlockWorkerManager_t *ecBlockWorkerMgr){
         	if (sendRequestToBlockServer(ecBlockWorkerMgr, blockWorkerPtr) == 1)
         	{
         		removeSockWriteMonitoring(ecBlockWorkerMgr, blockWorkerPtr);
-        		printf("removed idx:%d, inMonitoringSockNum:%d\n", 
-        				blockWorkerPtr->workerIdx, ecBlockWorkerMgr->inMonitoringSockNum);
+//                printf("removed idx:%d, inMonitoringSockNum:%d\n",
+//                        blockWorkerPtr->workerIdx, ecBlockWorkerMgr->inMonitoringSockNum);
         	}
         }else if(events[idx].events & EPOLLIN){
         	if (recvReplyFromBlockServer(ecBlockWorkerMgr, blockWorkerPtr) == 1)
         	{
         		removeSockReadMonitoring(ecBlockWorkerMgr, blockWorkerPtr);
-        		printf("removed idx:%d, inMonitoringSockNum:%d\n", 
-        				blockWorkerPtr->workerIdx, ecBlockWorkerMgr->inMonitoringSockNum);
+//                printf("removed idx:%d, inMonitoringSockNum:%d\n", 
+//                        blockWorkerPtr->workerIdx, ecBlockWorkerMgr->inMonitoringSockNum);
         	}
         }else if((events[idx].events & EPOLLERR)||
                (events[idx].events & EPOLLHUP)){

@@ -263,7 +263,7 @@ void initReadFileFromMetaReply(ECFileManager_t *ecFileMgr, int fd, const char *r
         return;
     }
     
-    printf("Recvd:******\n\n%s\n\n*********\n", replyBuf);
+//    printf("Recvd:******\n\n%s\n\n*********\n", replyBuf);
     ECFile_t *ecFilePtr = ecFileMgr->ecFiles + fd;
     
     ecFilePtr->fileCurState = ECFILE_STATE_READ;
@@ -406,7 +406,7 @@ ssize_t readECFile(ECFileManager_t *ecFileMgr, int ecFd, char *readBuf, size_t r
 
     if (ecFile->degradedReadFlag == 0)
      {
-//         printf("readSize:%lu\n",readSize);
+         printf("readSize:%lu\n",readSize);
          readedSize = performReadJob(ecFileMgr,  ecFd, readBuf,  readSize);
      }else{
          if (ecFile->decoding_matrix == NULL) {
@@ -460,8 +460,9 @@ ssize_t writeECFile(ECFileManager_t *ecFileMgr, int ecFd, char *writeBuf, size_t
         return -1;
     }
 
+//    printf("performWriteJob writeSize:%lu\n",writeSize);
     writtenSize = performWriteJob(ecFileMgr, ecFd, writeBuf, writeSize);
-    //printf("writtenSize:%ld, writeSize:%lu\n",writtenSize,writeSize);
+//    printf("writtenSize:%ld, writeSize:%lu\n",writtenSize,writeSize);
 
     if (writtenSize > 0)
     {

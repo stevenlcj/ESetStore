@@ -165,7 +165,7 @@ void getMatrix(const char *buf, size_t stripeK, size_t stripeM, int *matrix){
     size_t matSize = stripeK * stripeM;
     
     getMatrixValues(str1, str2, buf, matrix, matSize);
-    printMatrix(matrix, (int)stripeM, (int)stripeK);
+//    printMatrix(matrix, (int)stripeM, (int)stripeK);
 
 }
 
@@ -406,7 +406,7 @@ ssize_t readECFile(ECFileManager_t *ecFileMgr, int ecFd, char *readBuf, size_t r
 
     if (ecFile->degradedReadFlag == 0)
      {
-         printf("readSize:%lu\n",readSize);
+//         printf("readSize:%lu\n",readSize);
          readedSize = performReadJob(ecFileMgr,  ecFd, readBuf,  readSize);
      }else{
          if (ecFile->decoding_matrix == NULL) {
@@ -425,7 +425,7 @@ ssize_t readECFile(ECFileManager_t *ecFileMgr, int ecFd, char *readBuf, size_t r
              erasures[dNum] = -1;
              
              ecFile->decoding_matrix = grs_create_decoding_matrix((int)ecFile->stripeK, (int)ecFile->stripeM, (int)ecFile->stripeW, ecFile->matrix, ecFile->mat_idx, erasures, ecFile->dm_ids);
-             printMatrix(ecFile->decoding_matrix, (int)ecFile->stripeK, dNum);
+//             printMatrix(ecFile->decoding_matrix, (int)ecFile->stripeK, dNum);
          }
          
 //         printf("readSize:%lu\n",readSize);

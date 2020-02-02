@@ -39,7 +39,6 @@ void *ecStoreCoderWorker(void *arg);
 
 ECCoderWorker_t *createECCoderWorker(void *ecBlockWorkerMgr);
 
-void printCoderWorkerMem(ECCoderWorker_t *coderWorker);
 void deallocECCoderWorker(ECCoderWorker_t *coderWorker);
 #endif
 

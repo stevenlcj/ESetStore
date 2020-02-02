@@ -12,11 +12,6 @@
 
 #include "jerasure.h"
 
-void printCoderWorkerMem(ECCoderWorker_t *coderWorker){
-    printf("coderWorker:%p\n",coderWorker);
-    printf("ecBlockWorkerMgr:%p\n",coderWorker->ecBlockWorkerMgr);
-}
-
 void performEncodingJob(ECCoderWorker_t *coderWorker, ECBlockWorkerManager_t *ecBlockWorkerMgr, ECFile_t *filePtr){
 
 	int bIdx = 0;

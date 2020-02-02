@@ -82,7 +82,6 @@ size_t constructCreateFailedCmd(char *buf, size_t bufSize, uint64_t blockId, cha
 	writeToBuf(buf, (char *) blockCreateFailed,  &curWriteSize, &writeBackOffset);
 	writeToBuf(buf, (char *) cmdSuffixStr,  &curWriteSize, &writeBackOffset);
 
-	writeToBuf(buf, (char *) blockId,  &curWriteSize, &writeBackOffset);
 	uint64_to_str(blockId, tempBuf, tmpBufSize);
 	writeToBuf(buf, (char *) tempBuf,  &curWriteSize, &writeBackOffset);
 	writeToBuf(buf, (char *) cmdSuffixStr,  &curWriteSize, &writeBackOffset);

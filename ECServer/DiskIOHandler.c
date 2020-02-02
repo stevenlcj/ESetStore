@@ -58,6 +58,17 @@ int checkFileId(DiskIOManager_t *diskIOMgr, uint64_t fileId){
     return 0;
 }
 
+int getFileId(DiskIOManager_t *diskIOMgr, uint64_t fileId){
+    int idx;
+    for (idx = 0; idx < diskIOMgr->diskIOSize; ++idx) {
+        if ((*(diskIOMgr->diskIOIndicators+idx) == 1) && (diskIOMgr->diskIOPtrs + idx)->blockId == fileId)  {
+            return idx;
+        }
+    }
+    
+    return -1;
+}
+
 int initReadFileInfo(DiskIO_t *diskIOPtr, uint64_t fileId, char *dirPath){
     diskIOPtr->blockId = fileId;
     diskIOPtr->fileNameSize = uint64_to_str(fileId, diskIOPtr->fileName, FILE_NAME_BUF_SIZE);
@@ -329,11 +340,12 @@ int deleteFile(uint64_t fileId, DiskIOManager_t *diskIOMgr){
 
     pthread_mutex_lock(&diskIOMgr->lock);
 
-    if (checkFileId(diskIOMgr, fileId) == -1) {
-        printf("Error:unable to delete file with id:%lu as it in use\n", fileId);
-        pthread_mutex_unlock(&diskIOMgr->lock);
-        return -1;
+    while (checkFileId(diskIOMgr, fileId) == -1) {
+        //printf("Error:unable to delete file with id:%lu as it in use\n", fileId);
+        closeFile(getFileId(diskIOMgr, fileId), diskIOMgr);
     }
+    
+    pthread_mutex_unlock(&diskIOMgr->lock);
 
     //gettimeofday(&startTime, NULL);
     ret = startRemoveFile(fileId, diskIOMgr->filePath);

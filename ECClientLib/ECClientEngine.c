@@ -56,7 +56,7 @@ int createFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
         return -1;
     }
     
-    //printf("Start create file cmd:%s\n", createCmd);
+    printf("Start create file cmd:%s\n", createCmd);
     int fileFd = createECFile(clientEnginePtr->ecFileMgr, FileName);
     
     if (fileFd == -1) {
@@ -77,7 +77,7 @@ int createFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
     
     recvMetaReply(clientEnginePtr->metaSockFd, recvBuf, 1024);
     
-    //printf("Recvd:%s ****from meta server\n", recvBuf);
+    printf("Recvd:%s ****from meta server\n", recvBuf);
     
     char createOK[] ="CreateOK\0";
     if (strncmp(createOK, recvBuf, strlen(createOK)) != 0) {
@@ -209,12 +209,12 @@ int deleteFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
     
     ssize_t writeSize = writeCmdToMeta(clientEnginePtr, deleteCmd) ;
     
-    free(deleteCmd);
     if (writeSize != (ssize_t) (strlen(deleteCmd) + 1)) {
-        printf("write cmd error: deleteFile\n");
+        printf("write cmd error: deleteFile, cmd:%s\n",deleteCmd);
         return -1;
     }
-    
+    free(deleteCmd);
+
     char recvBuf[1024];
     char OKStr[]="DeleteOK\0";
     ssize_t recvSize = recvMetaReply(clientEnginePtr->metaSockFd, recvBuf, 1024);

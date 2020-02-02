@@ -126,7 +126,7 @@ void getBlockInfo(int blockId, blockInfo_t *block, const char *buf){
     memcpy(block->IPAddr, (buf+startOffset + strLen), block->IPSize);
     block->IPAddr[block->IPSize] = '\0';
     
-    printf("IPAddr:%s\n",block->IPAddr);
+//    printf("IPAddr:%s\n",block->IPAddr);
     char PortStr[] = "Port:";
 
     startOffset = endOffset + strlen(endStr);
@@ -155,7 +155,7 @@ void getBlockInfo(int blockId, blockInfo_t *block, const char *buf){
     char serverStatus[] = "ServerStatus:\0";
     block->serverStatus = getIntValueBetweenStrings(serverStatus, endStr, (buf+startOffset + blockStrLen + intStrLen + 1));
     
-    printf("serverStatus:%d\n", block->serverStatus);
+//    printf("serverStatus:%d\n", block->serverStatus);
 
     //printf("serverStatus:%d IPAddr:%s block port:%d\n",block->serverStatus,block->IPAddr,  block->port);
 }
@@ -235,14 +235,14 @@ void initCreateFileFromMetaReply(ECFileManager_t *ecFileMgr, int fd, const char 
     getStreamingSize(replyBuf, &ecFilePtr->streamingSize);
     
     ecFilePtr->matrix = talloc(int, (ecFilePtr->stripeK* ecFilePtr->stripeM));
-    printf("start getMatrix\n");
+//    printf("start getMatrix\n");
     getMatrix(replyBuf, ecFilePtr->stripeK, ecFilePtr->stripeM, ecFilePtr->matrix);
-    printf("end getMatrix\n");
+//    printf("end getMatrix\n");
     ecFilePtr->blockNum = ecFilePtr->stripeK + ecFilePtr->stripeM;
     ecFilePtr->blocks = talloc(blockInfo_t, ecFilePtr->blockNum);
     
     int blockIdx;    
-    printf("StripeK:%lu, StripeM:%lu\n", ecFilePtr->stripeK, ecFilePtr->stripeM);
+//    printf("StripeK:%lu, StripeM:%lu\n", ecFilePtr->stripeK, ecFilePtr->stripeM);
     
     for (blockIdx = 0; blockIdx < (int)(ecFilePtr->stripeK + ecFilePtr->stripeM); ++blockIdx) {
         blockInfo_t *blockPtr = ecFilePtr->blocks + blockIdx;

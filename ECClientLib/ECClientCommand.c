@@ -73,7 +73,7 @@ char *formDeleteFileCmd(const char *fileName){
     memcpy((cmdStr + strlen(deleteCmd)+ strlen(fileName)), cmdSuffix, strlen(cmdSuffix));
     
     cmdStr[cmdSize - 1] = '\0';
-    printf("deleteCmd:%s\n",cmdStr);
+//    printf("deleteCmd:%s\n",cmdStr);
     return cmdStr;
 }
 
@@ -136,7 +136,7 @@ char *formMetaWriteSizeCmd(const char *fileName, size_t writedSize){
     memcpy((cmdStr + strlen(metaWriteOverCmd)+ strlen(fileName) + strlen(cmdSuffix) + strlen(writeSizeCmd)+strSize), cmdSuffix, strlen(cmdSuffix));
 
     *(cmdStr + cmdSize - 1) = '\0';
-    printf("formMetaWriteSizeCmd:%s\n",cmdStr);
+//    printf("formMetaWriteSizeCmd:%s\n",cmdStr);
     return cmdStr;
 }
 

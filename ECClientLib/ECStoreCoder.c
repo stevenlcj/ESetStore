@@ -81,7 +81,7 @@ void *ecStoreCoderWorker(void *arg){
 
 	while(coderWorker->exitFlag == 0){
 		sem_wait(&coderWorker->jobStartSem);
-        printf("coderWorker->exitFlag:%d\n",coderWorker->exitFlag);
+//        printf("coderWorker->exitFlag:%d\n",coderWorker->exitFlag);
 		if (coderWorker->exitFlag == 1)
 		{
 			break;

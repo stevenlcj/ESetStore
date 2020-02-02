@@ -612,7 +612,7 @@ void allockBlockWorkersForDegradeRead(ECBlockWorkerManager_t *ecBlockWorkerMgr, 
 }
 
 void submitReadWriteJob(ECBlockWorkerManager_t *ecBlockWorkerMgr){
-	printf("submitReadWriteJob\n");
+//    printf("submitReadWriteJob\n");
 	sem_post(&ecBlockWorkerMgr->jobStartSem);
 }
 

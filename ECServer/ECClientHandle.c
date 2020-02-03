@@ -302,7 +302,9 @@ int processClientReadingRequest(ECClientManager_t *ecClientMgr, ECClient_t *ecCl
 	ecClientPtr->fileFd = getIntValueBetweenStrings(blockFdStr, suffixStr, ecClientPtr->readMsgBuf->buf);
 	ecClientPtr->reqSize =	getIntValueBetweenStrings(readSize, suffixStr, ecClientPtr->readMsgBuf->buf);
 	ecClientPtr->handledSize = 0;
-
+    
+    ecClientPtr->readRequestTotal = ecClientPtr->readRequestTotal + ecClientPtr->reqSize;
+    
     printf("sockFd:%d, blockId:%llu, reqReadSize:%lu\n",ecClientPtr->sockFd, ecClientPtr->blockId, ecClientPtr->reqSize );
 	return submitReadJobToDiskWorker(ecClientMgr, ecClientPtr);
 }
@@ -489,6 +491,12 @@ int processClientOutMsg(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr,
             return 1;
         }
         
+        if (ecClientPtr->readPendingToWriteToSockTotal > 0) {
+            ecClientPtr->readPendingToWriteToSockTotal = ecClientPtr->readPendingToWriteToSockTotal - wSize;
+            printf("processClientOutMsg:sockFd:%d, totalRead:%lu, totalReq:%lu, readPendingToWriteToSockTotal:%lu\n",ecClientPtr->sockFd, ecClientPtr->readTotal,ecClientPtr->readRequestTotal, ecClientPtr->readPendingToWriteToSockTotal);
+        }
+        
+        
         *writeSize = *writeSize + wSize;
 
         writeMsgBuf->rOffset = writeMsgBuf->rOffset + wSize;
@@ -519,7 +527,6 @@ void writeContentToClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPt
         writeMsgBufPtr = writeMsgBufPtr->next;
     }
     
-    printf("sockFd:%d, blockId:%llu, disk reqSize:%lu, handledSize:%lu diskJobPtr:%p\n",ecClientPtr->sockFd, ecClientPtr->blockId,diskJobPtr->bufReqSize, diskJobPtr->bufHandledSize,diskJobPtr);
     
     while (diskJobPtr->bufReqSize != diskJobPtr->bufHandledSize) {
         cpSize = (writeMsgBufPtr->bufSize - writeMsgBufPtr->wOffset) > (diskJobPtr->bufReqSize - diskJobPtr->bufHandledSize)
@@ -539,6 +546,11 @@ void writeContentToClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPt
             writeMsgBufPtr = writeMsgBufPtr->next;
         }
     }
+    
+    ecClientPtr->readTotal =  ecClientPtr->readTotal + diskJobPtr->bufHandledSize;
+    ecClientPtr->readPendingToWriteToSockTotal = ecClientPtr->readPendingToWriteToSockTotal + diskJobPtr->bufHandledSize;
+    printf("sockFd:%d, totalRead:%lu, totalReq:%lu, readPendingToWriteToSockTotal:%lu\n",ecClientPtr->sockFd, ecClientPtr->readTotal,ecClientPtr->readRequestTotal, ecClientPtr->readPendingToWriteToSockTotal);
+
     
     size_t writeSize = 0;
     processClientOutMsg(ecClientMgr, ecClientPtr, &writeSize);

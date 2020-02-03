@@ -100,6 +100,8 @@ void submitReadDoneJob(DiskJobWorker_t *diskJobWorkerPtr, DiskJob_t *diskJobPtr)
    // printf("submit readdone job with req size:%lu\n", diskJobPtr->bufReqSize);
     enqueueDiskJob(ecClientMgr->comingJobQueue, diskJobPtr);
     
+    ECClient_t *ecClientPtr = (ECClient_t *)diskJobPtr->sourcePtr;
+
     char ch = 'C';
     write(ecClientMgr->clientMgrPipes[1], (void *)&ch, 1);
     
@@ -131,7 +133,7 @@ void handleReadJob(DiskJobWorker_t *diskJobWorkerPtr, DiskJob_t *diskJobPtr){
     
     diskJobPtr->jobType = DISK_IO_JOB_READDONE;
     
-    ECClient_t *ecClientPtr = (ECClient_t *)diskJobPtr;
+    ECClient_t *ecClientPtr = (ECClient_t *)diskJobPtr->sourcePtr;
     printf("Func:handleReadJob sockFd:%d, blockId:%llu, disk reqSize:%lu, handledSize:%lu diskJobPtr:%p\n",ecClientPtr->sockFd, ecClientPtr->blockId,diskJobPtr->bufReqSize, diskJobPtr->bufHandledSize,diskJobPtr);
 
     gettimeofday(&diskJobPtr->endRead, NULL);

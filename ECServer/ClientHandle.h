@@ -49,6 +49,11 @@ typedef struct ECClient{
     int fileFd;
     uint64_t blockId;
     size_t reqSize;
+    
+    size_t readRequestTotal;
+    size_t readPendingToWriteToSockTotal;
+    size_t readTotal;
+    
     size_t handledSize;
     
     struct ECClient *next;

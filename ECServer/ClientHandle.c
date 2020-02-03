@@ -39,6 +39,10 @@ ECClient_t *newECClient(int sockFd){
     ecClientPtr->readMsgBuf = createMessageBuf(DEFAULT_READ_WRITE_BUF_SIZE);
     ecClientPtr->writeMsgBuf = createMessageBuf(DEFAULT_READ_WRITE_BUF_SIZE);
 
+    ecClientPtr->readRequestTotal = 0;
+    ecClientPtr->readPendingToWriteToSockTotal = 0;
+    ecClientPtr->readTotal = 0;
+    
     return ecClientPtr;
 }
 
@@ -116,8 +120,8 @@ void startECClientManager(ECClientManager_t *ecClientMgr){
 void printRemainingClients(ECClientManager_t *ecClientMgr){
         ECClient_t *ecClientPtr = ecClientMgr->monitoringClients;
             while (ecClientPtr != NULL) {
-                printf("sock:%d, blockId:%llu reqSize:%lu, handledSize:%lu\n",ecClientPtr->sockFd, ecClientPtr->blockId,ecClientPtr->reqSize, ecClientPtr->handledSize);
-                                ecClientPtr = ecClientPtr->next;
+                printf("processClientOutMsg:sockFd:%d, totalRead:%lu, totalReq:%lu, readPendingToWriteToSockTotal:%lu\n",ecClientPtr->sockFd, ecClientPtr->readTotal,ecClientPtr->readRequestTotal, ecClientPtr->readPendingToWriteToSockTotal);
+                ecClientPtr = ecClientPtr->next;
         }
 }
 

@@ -194,7 +194,7 @@ ssize_t readFile(ECClientEngine_t *clientEnginePtr, int fileFd, char *buf, size_
         //printf("call readECFile\n");
         ssize_t readSize = readECFile(clientEnginePtr->ecFileMgr, fileFd, buf, readSize);
         printf ("tid:%ld, __FUNCTION__ = %s done\n",pthread_self(), __FUNCTION__);
-        return readSize
+        return readSize;
     }
     
     printf("ecFile->fileCurState != ECFILE_STATE_READ\n");

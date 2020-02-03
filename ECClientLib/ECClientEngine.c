@@ -12,9 +12,12 @@
 #include "ECClientCommand.h"
 #include "ECFileHandle.h"
 #include <string.h>
+#include <pthread.h>
 
 ECClientEngine_t *createECClientEngine(const char *metaIP, int metaPort){
+    printf ("tid:%s, __FUNCTION__ = %s\n",pthread_self(), __FUNCTION__);
     if (metaPort < 0 || metaIP == NULL ) {
+        printf("%ld metaPort < 0 || metaIP == NULL\n",pthread_self());
         return NULL;
     }
     
@@ -32,10 +35,14 @@ ECClientEngine_t *createECClientEngine(const char *metaIP, int metaPort){
     
     clientEnginePtr->ecFileMgr = createECFileMgr((void *) clientEnginePtr);
     
+    printf ("tid:%s, __FUNCTION__ = %s Done\n",pthread_self(), __FUNCTION__);
+
     return clientEnginePtr;
 }
 
 void deallocECClientEngine(ECClientEngine_t * clientEnginePtr){
+    printf ("tid:%s, __FUNCTION__ = %s\n",pthread_self(), __FUNCTION__);
+
     if (clientEnginePtr == NULL) {
         return;
     }
@@ -45,6 +52,8 @@ void deallocECClientEngine(ECClientEngine_t * clientEnginePtr){
     deallocECFileMgr(clientEnginePtr->ecFileMgr);
     
     free(clientEnginePtr);
+    printf ("tid:%s, __FUNCTION__ = %sdone\n",pthread_self(), __FUNCTION__);
+
 }
 
 //Send cmd:Create\r\nFileName\r\n\0

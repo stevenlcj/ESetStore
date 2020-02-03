@@ -275,10 +275,10 @@ void deallocBlockWorkerMgr(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 	sem_post(&coderWorker->jobStartSem);
     
     int value;
-    sem_getvalue(&coderWorker->jobStartSem, &value);
-    printf("wait coder:%ld to exit value:%d\n",ecBlockWorkerMgr->coderPid,value);
+//    sem_getvalue(&coderWorker->jobStartSem, &value);
+//    printf("wait coder:%ld to exit value:%d\n",ecBlockWorkerMgr->coderPid,value);
     pthread_join(ecBlockWorkerMgr->coderPid, NULL);//Wait coder thread exit before freeing
-    printf("coder:%ld to exit\n",ecBlockWorkerMgr->coderPid);
+//    printf("coder:%ld to exit\n",ecBlockWorkerMgr->coderPid);
     
 	deallocWorkerBufs(ecBlockWorkerMgr);
 

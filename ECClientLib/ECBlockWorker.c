@@ -613,14 +613,12 @@ void allockBlockWorkersForDegradeRead(ECBlockWorkerManager_t *ecBlockWorkerMgr, 
 
 void submitReadWriteJob(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 //    printf("submitReadWriteJob\n");
-    workerPerformReadPrint(ecBlockWorkerMgr,"submitReadWriteJob:");
 	sem_post(&ecBlockWorkerMgr->jobStartSem);
 }
 
 void waitReadWriteJobDone(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 	//printf("Start wait write job\n");
 	sem_wait(&ecBlockWorkerMgr->jobFinishedSem);
-    workerPerformReadPrint(ecBlockWorkerMgr,"waitReadWriteJobDone:");
 	//printf("writeJob is done\n");
 }
 
@@ -678,8 +676,8 @@ ssize_t performReadJob(ECFileManager_t *ecFileMgr, int ecFd, char *readBuf, size
 		{
 			allockBlockWorkersForNormalRead(ecBlockWorkerMgr, ecFilePtr);
 			connectBlockWorkersForRead(ecBlockWorkerMgr);
+            workerPerformReadPrint(ecBlockWorkerMgr,"openBlocksForRead:");
 			openBlocksForRead(ecBlockWorkerMgr);
-            
             workerPerformReadPrint(ecBlockWorkerMgr,"alreadyOpenBlocksForRead:");
 
 		}
@@ -687,9 +685,11 @@ ssize_t performReadJob(ECFileManager_t *ecFileMgr, int ecFd, char *readBuf, size
 		setWorkerBufs(ecBlockWorkerMgr, ecFilePtr);
 	}
 
+    workerPerformReadPrint(ecBlockWorkerMgr,"submitReadWriteJob:");
 	submitReadWriteJob(ecBlockWorkerMgr);
 	waitReadWriteJobDone(ecBlockWorkerMgr);
-
+    workerPerformReadPrint(ecBlockWorkerMgr,"waitReadWriteJobDoneEnd:");
+    
 	return (ssize_t) ecFilePtr->bufHandledSize;
 }
 

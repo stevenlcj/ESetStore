@@ -1149,7 +1149,7 @@ void workerPerformReadPrint(ECBlockWorkerManager_t *ecBlockWorkerMgr,char *msg){
     int bIdx = 0;
     do
     {
-        printf("%sblockId:%llu startWorkerPerformRead\n",msg,blockWorkerPtr->blockId);
+        printf("%sblockId:%llu startWorkerPerformRead bufSize:%lu bufWritedSize:%lu\n",msg,blockWorkerPtr->blockId,ecFilePtr->bufSize,ecFilePtr->bufWritedSize);
         blockWorkerPtr = blockWorkerPtr->next;
         ++bIdx;
     }while((size_t) bIdx != ecFilePtr->stripeK);
@@ -1176,10 +1176,8 @@ void workerPerformRead(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 //		recvBlockData(ecBlockWorkerMgr, ecFilePtr, readWorkerBuf);
 //		copyDataToMainBuf(ecBlockWorkerMgr);
         startReadECBlock(ecBlockWorkerMgr, ecFilePtr, blockWorkerPtr, startOffset, margin);
-        
         blockWorkerPtr = blockWorkerPtr->next;
         startOffset = startOffset + ecFilePtr->streamingSize;
-        
 	}
 
 //    gettimeofday(&endTime, NULL);
@@ -1432,7 +1430,6 @@ void performThreadWorkerJob(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 	switch(ecBlockWorkerMgr->curJobState){
 		case ECJOB_WRITE:
 			coderWorker->jobFinishedFlag = 0;
-            workerPerformReadPrint(ecBlockWorkerMgr,"ECJOB_WRITE:");
 			sem_post(&coderWorker->jobStartSem);
 			workerPerformWrite(ecBlockWorkerMgr);
 		break;

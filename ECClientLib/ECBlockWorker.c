@@ -273,7 +273,12 @@ void deallocBlockWorkerMgr(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 
 	sem_post(&ecBlockWorkerMgr->jobStartSem);
 	sem_post(&coderWorker->jobStartSem);
+    
+    int value;
+    sem_getvalue(&coderWorker->jobStartSem, &value);
+    printf("wait coder:%ld to exit value:%d\n",ecBlockWorkerMgr->coderPid,value);
     pthread_join(ecBlockWorkerMgr->coderPid, NULL);//Wait coder thread exit before freeing
+    printf("coder:%ld to exit\n",ecBlockWorkerMgr->coderPid);
     
 	deallocWorkerBufs(ecBlockWorkerMgr);
 
@@ -680,9 +685,7 @@ ssize_t performReadJob(ECFileManager_t *ecFileMgr, int ecFd, char *readBuf, size
 		{
 			allockBlockWorkersForNormalRead(ecBlockWorkerMgr, ecFilePtr);
 			connectBlockWorkersForRead(ecBlockWorkerMgr);
-            workerPerformReadPrint(ecBlockWorkerMgr,"openBlocksForRead:");
 			openBlocksForRead(ecBlockWorkerMgr);
-            workerPerformReadPrint(ecBlockWorkerMgr,"alreadyOpenBlocksForRead:");
 
 		}
 
@@ -692,10 +695,10 @@ ssize_t performReadJob(ECFileManager_t *ecFileMgr, int ecFd, char *readBuf, size
 	//submitReadWriteJob(ecBlockWorkerMgr);
 	//waitReadWriteJobDone(ecBlockWorkerMgr);
     if (ecBlockWorkerMgr->curJobState == ECJOB_READ) {
-        workerPerformReadPrint(ecBlockWorkerMgr,"ECJOB_READ:");
+//        workerPerformReadPrint(ecBlockWorkerMgr,"ECJOB_READ:");
         workerPerformRead(ecBlockWorkerMgr);
     }else if(ecBlockWorkerMgr->curJobState == ECJOB_DEGRADED_READ){
-        workerPerformReadPrint(ecBlockWorkerMgr,"ECJOB_DEGRADED_READ:");
+//        workerPerformReadPrint(ecBlockWorkerMgr,"ECJOB_DEGRADED_READ:");
         ECCoderWorker_t *coderWorker = (ECCoderWorker_t *)ecBlockWorkerMgr->coderWorker;
         coderWorker->jobFinishedFlag = 0;
         sem_post(&coderWorker->jobStartSem);

@@ -113,7 +113,7 @@ void deallocECCoderWorker(ECCoderWorker_t *coderWorker){
 
 	sem_destroy(&coderWorker->jobStartSem);
 	sem_destroy(&coderWorker->waitJobSem);
-	sem_destroy(&coderWorker->waitJobSem);
+	sem_destroy(&coderWorker->jobFinishedSem);
 
 	free(coderWorker);
 }

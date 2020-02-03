@@ -1165,8 +1165,6 @@ void workerPerformRead(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 //    writedSize = ecFilePtr->bufWritedSize;
 //    gettimeofday(&startTime, NULL);
     
-    workerPerformReadPrint(ecBlockWorkerMgr, "Startread:");
-
     ECBlockWorker_t *blockWorkerPtr = ecFilePtr->blockWorkers;
     size_t margin = ecFilePtr->streamingSize * ecFilePtr->stripeK;
     size_t startOffset = 0;
@@ -1189,7 +1187,6 @@ void workerPerformRead(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 
 	ecBlockWorkerMgr->jobDoneFlag = 1;
     
-    workerPerformReadPrint(ecBlockWorkerMgr, "Endread:");
 	sem_post(&ecBlockWorkerMgr->jobFinishedSem);
 }
 
@@ -1433,7 +1430,6 @@ void performThreadWorkerJob(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 			sem_post(&coderWorker->jobStartSem);
 			workerPerformWrite(ecBlockWorkerMgr);
 		break;
-
         case ECJOB_READ:
             workerPerformReadPrint(ecBlockWorkerMgr,"ECJOB_READ:");
 			workerPerformRead(ecBlockWorkerMgr);

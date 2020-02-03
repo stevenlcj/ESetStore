@@ -1432,20 +1432,24 @@ void performThreadWorkerJob(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 	switch(ecBlockWorkerMgr->curJobState){
 		case ECJOB_WRITE:
 			coderWorker->jobFinishedFlag = 0;
+            workerPerformReadPrint(ecBlockWorkerMgr,"ECJOB_WRITE:");
 			sem_post(&coderWorker->jobStartSem);
 			workerPerformWrite(ecBlockWorkerMgr);
 		break;
 
         case ECJOB_READ:
+            workerPerformReadPrint(ecBlockWorkerMgr,"ECJOB_READ:");
 			workerPerformRead(ecBlockWorkerMgr);
 		break;
 		case ECJOB_DEGRADED_READ:
             //To do
+            workerPerformReadPrint(ecBlockWorkerMgr,"ECJOB_DEGRADED_READ:");
             coderWorker->jobFinishedFlag = 0;
             sem_post(&coderWorker->jobStartSem);
 			workerPerformDegradedRead(ecBlockWorkerMgr);
 		break;
 		default:
+            workerPerformReadPrint(ecBlockWorkerMgr,"Unknow job:");
 			printf("Unknow job\n");
 	}
 }

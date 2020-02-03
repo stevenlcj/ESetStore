@@ -613,12 +613,14 @@ void allockBlockWorkersForDegradeRead(ECBlockWorkerManager_t *ecBlockWorkerMgr, 
 
 void submitReadWriteJob(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 //    printf("submitReadWriteJob\n");
+    workerPerformReadPrint(ecBlockWorkerMgr,"submitReadWriteJob:");
 	sem_post(&ecBlockWorkerMgr->jobStartSem);
 }
 
 void waitReadWriteJobDone(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 	//printf("Start wait write job\n");
 	sem_wait(&ecBlockWorkerMgr->jobFinishedSem);
+    workerPerformReadPrint(ecBlockWorkerMgr,"waitReadWriteJobDone:");
 	//printf("writeJob is done\n");
 }
 

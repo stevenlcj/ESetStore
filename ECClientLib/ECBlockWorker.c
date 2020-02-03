@@ -679,6 +679,9 @@ ssize_t performReadJob(ECFileManager_t *ecFileMgr, int ecFd, char *readBuf, size
 			allockBlockWorkersForNormalRead(ecBlockWorkerMgr, ecFilePtr);
 			connectBlockWorkersForRead(ecBlockWorkerMgr);
 			openBlocksForRead(ecBlockWorkerMgr);
+            
+            workerPerformReadPrint(ecBlockWorkerMgr,"alreadyOpenBlocksForRead:");
+
 		}
 
 		setWorkerBufs(ecBlockWorkerMgr, ecFilePtr);

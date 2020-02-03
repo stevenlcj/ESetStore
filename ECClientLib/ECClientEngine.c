@@ -41,7 +41,7 @@ ECClientEngine_t *createECClientEngine(const char *metaIP, int metaPort){
 }
 
 void deallocECClientEngine(ECClientEngine_t * clientEnginePtr){
-    printf ("tid:%ld, __FUNCTION__ = %s\n",pthread_self(), __FUNCTION__);
+    //printf ("tid:%ld, __FUNCTION__ = %s\n",pthread_self(), __FUNCTION__);
 
     if (clientEnginePtr == NULL) {
         return;
@@ -52,7 +52,7 @@ void deallocECClientEngine(ECClientEngine_t * clientEnginePtr){
     deallocECFileMgr(clientEnginePtr->ecFileMgr);
     
     free(clientEnginePtr);
-    printf ("tid:%ld, __FUNCTION__ = %sdone\n",pthread_self(), __FUNCTION__);
+    //printf ("tid:%ld, __FUNCTION__ = %sdone\n",pthread_self(), __FUNCTION__);
 
 }
 

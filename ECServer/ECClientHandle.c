@@ -306,7 +306,7 @@ int processClientReadingRequest(ECClientManager_t *ecClientMgr, ECClient_t *ecCl
     
     ecClientPtr->readRequestTotal = ecClientPtr->readRequestTotal + ecClientPtr->reqSize;
     
-    printf("sockFd:%d, blockId:%llu, reqReadSize:%lu\n",ecClientPtr->sockFd, ecClientPtr->blockId, ecClientPtr->reqSize );
+//    printf("sockFd:%d, blockId:%llu, reqReadSize:%lu\n",ecClientPtr->sockFd, ecClientPtr->blockId, ecClientPtr->reqSize );
 	return submitReadJobToDiskWorker(ecClientMgr, ecClientPtr);
 }
 
@@ -372,6 +372,7 @@ int writeDataToDisk(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
 
 int getClientInCmd(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
 	ECCLIENT_IN_STATE_t inCmdState = parseClientInCmd(ecClientPtr);
+    printf("recv cmd from scok:%d\n",ecClientPtr->sockFd);
 	switch(inCmdState){
 		case ECCLIENT_IN_STATE_CREATE:{
 			processClientCreateRequest(ecClientMgr, ecClientPtr);

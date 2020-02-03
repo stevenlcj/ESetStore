@@ -135,7 +135,7 @@ void getBlockFd(ECBlockWorker_t *blockWorkerPtr){
 	char suffix[] = "\r\n\0";
 	blockWorkerPtr->blockFd = getIntValueBetweenStrings(fdStr, suffix, blockWorkerPtr->readMsgBuf->buf);
 
-//    printf("get blockFd:%d\n", blockWorkerPtr->blockFd);
+    printf("get blockFd:%d for block:%llu\n", blockWorkerPtr->blockFd,blockWorkerPtr->blockId);
 }
 
 int recvReplyFromBlockServer(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECBlockWorker_t *blockWorkerPtr){
@@ -191,7 +191,7 @@ int recvReplyFromBlockServer(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECBlockWo
 			}
 			break;
 			default:{
-
+                printf("unknow state for worker with blockId:%llu\n",blockWorkerPtr->blockId);
 			}
 		}
 		//printf("Recvd reply:%s\n", blockWorkerPtr->readMsgBuf->buf);
@@ -257,6 +257,7 @@ int openBlockForRead(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECBlockWorker_t *
 	if (blockWorkerPtr->curState == Worker_STATE_CONNECTED)
 	{
 		blockWorkerPtr->writeMsgBuf->wOffset = constructOpenBlockCmd(blockWorkerPtr->writeMsgBuf->buf, blockWorkerPtr->blockId);
+        printf("openBlock:%llu ForRead\n",blockWorkerPtr->blockId);
 		//formBlockWriteCmd(blockWorkerPtr->writeMsgBuf->buf, blockWorkerPtr->blockId);
 		blockWorkerPtr->curState = Worker_STATE_REQUEST_READ;
 		return sendRequestToBlockServer(ecBlockWorkerMgr, blockWorkerPtr);
@@ -982,14 +983,17 @@ void reqECBlockRead(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECBlockWorker_t *b
                                                                  readSize);
     
     ++ecBlockWorkerMgr->curInFlightReq;
+    printf("start to send blockId:%llu, read size:%lu\n",blockWorkerPtr->blockId, readSize);
     writeReadDataSize(ecBlockWorkerMgr, blockWorkerPtr);
     
     flushReqToServer(ecBlockWorkerMgr);
+    printf("finish send blockId:%llu, read size:%lu\n",blockWorkerPtr->blockId, readSize);
 }
 
 ssize_t performReadDataFromBlockServer(ECBlockWorker_t *blockWorkerPtr, char *buf, size_t readSize){
     
     ssize_t readedSize = recv(blockWorkerPtr->sockFd, buf, readSize, 0);
+    printf("blockId:%llu, recvd size:%ld\n",blockWorkerPtr->blockId, readedSize);
     
     return readedSize;
 }

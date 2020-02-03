@@ -43,6 +43,9 @@ ECClient_t *newECClient(int sockFd){
     ecClientPtr->readPendingToWriteToSockTotal = 0;
     ecClientPtr->readTotal = 0;
     
+    ecClientPtr->writedSizeToSock = 0;
+    ecClientPtr->pendingWriteSizeToSock = 0;
+    
     return ecClientPtr;
 }
 
@@ -120,6 +123,8 @@ void startECClientManager(ECClientManager_t *ecClientMgr){
 void printRemainingClients(ECClientManager_t *ecClientMgr){
         ECClient_t *ecClientPtr = ecClientMgr->monitoringClients;
             while (ecClientPtr != NULL) {
+                printf("printRemainingClients:sockFd:%d, writedSizeToSock:%lu, pendingWritedSizeToSock:%lu\n",
+                       ecClientPtr->sockFd,ecClientPtr->writedSizeToSock,ecClientPtr->pendingWriteSizeToSock);
                 printf("printRemainingClients:sockFd:%d, totalRead:%lu, totalReq:%lu, readPendingToWriteToSockTotal:%lu\n",ecClientPtr->sockFd, ecClientPtr->readTotal,ecClientPtr->readRequestTotal, ecClientPtr->readPendingToWriteToSockTotal);
                 ecClientPtr = ecClientPtr->next;
         }

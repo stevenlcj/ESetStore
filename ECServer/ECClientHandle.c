@@ -63,60 +63,57 @@ int hasInCmd(char *buf, size_t bufSize, char cmdFlag){
 }
 
 int addCreateOKCmd(ECClient_t *ecClientPtr){
-	ECMessageBuffer_t *writeMsgBuf = ecClientPtr->writeMsgBuf;
-	while(writeMsgBuf->next != NULL){
-		writeMsgBuf = writeMsgBuf->next;
+	ECMessageBuffer_t *wMsgBuf = ecClientPtr->writeMsgBuf;
+	while(wMsgBuf->next != NULL){
+		wMsgBuf = wMsgBuf->next;
 	}
 
-	//printf("before addCreateOKCmd wOffset:%lu, rOffset:%lu\n", ecClientPtr->writeMsgBuf->wOffset, ecClientPtr->writeMsgBuf->rOffset);
-	size_t wSize = constructCreateOKCmd(ecClientPtr->writeMsgBuf->buf + writeMsgBuf->wOffset, 
-														ecClientPtr->writeMsgBuf->bufSize-writeMsgBuf->wOffset, 
+	size_t wSize = constructCreateOKCmd(wMsgBuf->buf + wMsgBuf->wOffset,
+														wMsgBuf->bufSize-wMsgBuf->wOffset,
 														ecClientPtr->blockId, ecClientPtr->fileFd);
 
 	if (wSize == 0)
 	{
-		//printf("before addCreateOKCmd wOffset:%lu, rOffset:%lu\n", ecClientPtr->writeMsgBuf->wOffset, ecClientPtr->writeMsgBuf->rOffset);
-		writeMsgBuf->next =  createMessageBuf(writeMsgBuf->bufSize);
-		writeMsgBuf = writeMsgBuf->next;
-		writeMsgBuf->wOffset = writeMsgBuf->wOffset + constructCreateOKCmd(ecClientPtr->writeMsgBuf->buf + writeMsgBuf->wOffset, 
-														ecClientPtr->writeMsgBuf->bufSize-writeMsgBuf->wOffset, 
-														ecClientPtr->blockId, ecClientPtr->fileFd);
-	
-	}else{
-		writeMsgBuf->wOffset = writeMsgBuf->wOffset + wSize;
+		wMsgBuf->next =  createMessageBuf(wMsgBuf->bufSize);
+		wMsgBuf = wMsgBuf->next;
+        wSize = constructCreateOKCmd(wMsgBuf->buf +
+                             wMsgBuf->wOffset,
+                             wMsgBuf->bufSize-wMsgBuf->wOffset,
+                             ecClientPtr->blockId, ecClientPtr->fileFd);
 	}
+    
+    wMsgBuf->wOffset = wMsgBuf->wOffset + wSize;
+    ecClientPtr->pendingWriteSizeToSock = ecClientPtr->pendingWriteSizeToSock + wSize;
 	
-	//printf("after addCreateOKCmd wOffset:%lu, rOffset:%lu\n", ecClientPtr->writeMsgBuf->wOffset, ecClientPtr->writeMsgBuf->rOffset);
 	return 1;
 								
 }
 
 int addCreateFailedCmd(ECClient_t *ecClientPtr){
-	ECMessageBuffer_t *writeMsgBuf = ecClientPtr->writeMsgBuf;
+	ECMessageBuffer_t *wMsgBuf = ecClientPtr->writeMsgBuf;
 
-	while(writeMsgBuf->next != NULL){
-		writeMsgBuf = writeMsgBuf->next;
+	while(wMsgBuf->next != NULL){
+		wMsgBuf = wMsgBuf->next;
 	}
 
-	//printf("before addCreateFailedCmd wOffset:%lu, rOffset:%lu\n", ecClientPtr->writeMsgBuf->wOffset, ecClientPtr->writeMsgBuf->rOffset);
-	size_t wSize = constructCreateFailedCmd(ecClientPtr->writeMsgBuf->buf + writeMsgBuf->wOffset, 
-															ecClientPtr->writeMsgBuf->bufSize-writeMsgBuf->wOffset, 
-															ecClientPtr->blockId,
-															NULL, 0);
+	size_t wSize = constructCreateFailedCmd(wMsgBuf->buf + wMsgBuf->wOffset,
+                                            wMsgBuf->bufSize-wMsgBuf->wOffset,
+                                            ecClientPtr->blockId,NULL, 0);
 
 	if (wSize == 0)
 	{
-		//printf("before addCreateFailedCmd wOffset:%lu, rOffset:%lu\n", ecClientPtr->writeMsgBuf->wOffset, ecClientPtr->writeMsgBuf->rOffset);
-		writeMsgBuf->next =  createMessageBuf(writeMsgBuf->bufSize);
-		writeMsgBuf = writeMsgBuf->next;
-		writeMsgBuf->wOffset = writeMsgBuf->wOffset + constructCreateFailedCmd(ecClientPtr->writeMsgBuf->buf + writeMsgBuf->wOffset, 
-															ecClientPtr->writeMsgBuf->bufSize-writeMsgBuf->wOffset, 
-															ecClientPtr->blockId,
-															NULL, 0);
+		wMsgBuf->next =  createMessageBuf(wMsgBuf->bufSize);
+		wMsgBuf = wMsgBuf->next;
+		wSize = constructCreateFailedCmd(wMsgBuf->buf + wMsgBuf->wOffset,
+                                        wMsgBuf->bufSize-wMsgBuf->wOffset,
+                                        ecClientPtr->blockId,
+                                        NULL, 0);
 	
 	}
+    
+    wMsgBuf->wOffset = wMsgBuf->wOffset + wSize;
+    ecClientPtr->pendingWriteSizeToSock = ecClientPtr->pendingWriteSizeToSock + wSize;
 	
-	//printf("after addCreateFailedCmd wOffset:%lu, rOffset:%lu\n", ecClientPtr->writeMsgBuf->wOffset, ecClientPtr->writeMsgBuf->rOffset);
 	return 1;
 								
 }
@@ -151,54 +148,58 @@ int processClientCreateRequest(ECClientManager_t *ecClientMgr, ECClient_t *ecCli
 }
 
 int addOpenOKCmd(ECClient_t *ecClientPtr){
-	ECMessageBuffer_t *writeMsgBuf = ecClientPtr->writeMsgBuf;
-	while(writeMsgBuf->next != NULL){
-		writeMsgBuf = writeMsgBuf->next;
+	ECMessageBuffer_t *wMsgBuf = ecClientPtr->writeMsgBuf;
+	while(wMsgBuf->next != NULL){
+		wMsgBuf = wMsgBuf->next;
 	}
-
-	//printf("before addCreateOKCmd wOffset:%lu, rOffset:%lu\n", ecClientPtr->writeMsgBuf->wOffset, ecClientPtr->writeMsgBuf->rOffset);
-	size_t wSize = constructOpenOKCmd(ecClientPtr->writeMsgBuf->buf + writeMsgBuf->wOffset, 
-														ecClientPtr->writeMsgBuf->bufSize-writeMsgBuf->wOffset, 
-														ecClientPtr->blockId, ecClientPtr->fileFd);
+    
+	size_t wSize = constructOpenOKCmd(wMsgBuf->buf + wMsgBuf->wOffset,
+                                    wMsgBuf->bufSize-wMsgBuf->wOffset,
+                                    ecClientPtr->blockId, ecClientPtr->fileFd);
 
 	if (wSize == 0)
 	{
-		writeMsgBuf->next =  createMessageBuf(writeMsgBuf->bufSize);
-		writeMsgBuf = writeMsgBuf->next;
-		writeMsgBuf->wOffset = writeMsgBuf->wOffset + constructOpenOKCmd(ecClientPtr->writeMsgBuf->buf + writeMsgBuf->wOffset, 
-														ecClientPtr->writeMsgBuf->bufSize-writeMsgBuf->wOffset, 
-														ecClientPtr->blockId, ecClientPtr->fileFd);
+		wMsgBuf->next =  createMessageBuf(wMsgBuf->bufSize);
+		wMsgBuf = wMsgBuf->next;
+		wSize = constructOpenOKCmd(wMsgBuf->buf + wMsgBuf->wOffset,
+                                wMsgBuf->bufSize-wMsgBuf->wOffset,
+                                ecClientPtr->blockId, ecClientPtr->fileFd);
 	
-	}else{
-		writeMsgBuf->wOffset = writeMsgBuf->wOffset + wSize;
 	}
+    
+    ecClientPtr->pendingWriteSizeToSock = ecClientPtr->pendingWriteSizeToSock + wSize;
+    wMsgBuf->wOffset = wMsgBuf->wOffset + wSize;
 	
 	return 1;
 								
 }
 
 int addOpenFailedCmd(ECClient_t *ecClientPtr){
-	ECMessageBuffer_t *writeMsgBuf = ecClientPtr->writeMsgBuf;
+	ECMessageBuffer_t *wMsgBuf = ecClientPtr->writeMsgBuf;
 
-	while(writeMsgBuf->next != NULL){
-		writeMsgBuf = writeMsgBuf->next;
+	while(wMsgBuf->next != NULL){
+		wMsgBuf = wMsgBuf->next;
 	}
 
-	size_t wSize = constructOpenFailedCmd(ecClientPtr->writeMsgBuf->buf + writeMsgBuf->wOffset, 
-															ecClientPtr->writeMsgBuf->bufSize-writeMsgBuf->wOffset, 
-															ecClientPtr->blockId,
-															NULL, 0);
+	size_t wSize = constructOpenFailedCmd(wMsgBuf->buf + wMsgBuf->wOffset,
+                                        wMsgBuf->bufSize-wMsgBuf->wOffset,
+                                        ecClientPtr->blockId,
+                                        NULL, 0);
 
 	if (wSize == 0)
 	{
-		writeMsgBuf->next =  createMessageBuf(writeMsgBuf->bufSize);
-		writeMsgBuf = writeMsgBuf->next;
-		writeMsgBuf->wOffset = writeMsgBuf->wOffset + constructOpenFailedCmd(ecClientPtr->writeMsgBuf->buf + writeMsgBuf->wOffset, 
-															ecClientPtr->writeMsgBuf->bufSize-writeMsgBuf->wOffset, 
-															ecClientPtr->blockId,
-															NULL, 0);
+		wMsgBuf->next =  createMessageBuf(wMsgBuf->bufSize);
+		wMsgBuf = wMsgBuf->next;
+		wSize = constructOpenFailedCmd(wMsgBuf->buf + wMsgBuf->wOffset,
+                                    wMsgBuf->bufSize-wMsgBuf->wOffset,
+                                    ecClientPtr->blockId,
+                                    NULL, 0);
 	
 	}
+    
+    ecClientPtr->pendingWriteSizeToSock = ecClientPtr->pendingWriteSizeToSock + wSize;
+    wMsgBuf->wOffset = wMsgBuf->wOffset + wSize;
+
 	
 	return 1;
 								
@@ -483,13 +484,11 @@ int processClientInMsg(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr, 
 }
 
 int processClientOutMsg(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr, size_t *writeSize){
-	ECMessageBuffer_t *writeMsgBuf = ecClientPtr->writeMsgBuf;
+	ECMessageBuffer_t *wMsgBuf = ecClientPtr->writeMsgBuf;
     
-    while (ecClientPtr->writeMsgBuf->rOffset != ecClientPtr->writeMsgBuf->wOffset ) {
+    while (wMsgBuf->rOffset != wMsgBuf->wOffset ) {
              
-        ssize_t wSize = send(ecClientPtr->sockFd,  writeMsgBuf->buf+ writeMsgBuf->rOffset, (writeMsgBuf->wOffset-writeMsgBuf->rOffset), 0);
-        
-        //printf("wOffset:%lu, rOffset:%lu send size:%ld to client\n",ecClientPtr->writeMsgBuf->wOffset, ecClientPtr->writeMsgBuf->rOffset, wSize);
+        ssize_t wSize = send(ecClientPtr->sockFd,  wMsgBuf->buf+ wMsgBuf->rOffset, (wMsgBuf->wOffset-wMsgBuf->rOffset), 0);
         
         if (wSize <= 0) {
             addWriteEvent(ecClientMgr, ecClientPtr);
@@ -498,21 +497,23 @@ int processClientOutMsg(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr,
         
         if (ecClientPtr->readPendingToWriteToSockTotal > 0) {
             ecClientPtr->readPendingToWriteToSockTotal = ecClientPtr->readPendingToWriteToSockTotal - wSize;
-//            printf("processClientOutMsg:sockFd:%d, totalRead:%lu, totalReq:%lu, readPendingToWriteToSockTotal:%lu\n",ecClientPtr->sockFd, ecClientPtr->readTotal,ecClientPtr->readRequestTotal, ecClientPtr->readPendingToWriteToSockTotal);
         }
         
+        ecClientPtr->pendingWriteSizeToSock = ecClientPtr->pendingWriteSizeToSock - wSize;
+        ecClientPtr->writedSizeToSock = ecClientPtr->writedSizeToSock + wSize;
         
         *writeSize = *writeSize + wSize;
 
-        writeMsgBuf->rOffset = writeMsgBuf->rOffset + wSize;
+        wMsgBuf->rOffset = wMsgBuf->rOffset + wSize;
         
-        if (writeMsgBuf->rOffset == writeMsgBuf->wOffset) {
-            if (writeMsgBuf->next != NULL) {
-                ecClientPtr->writeMsgBuf = ecClientPtr->writeMsgBuf->next;
-                freeMessageBuf(writeMsgBuf);
+        if (wMsgBuf->rOffset == wMsgBuf->wOffset) {
+            if (wMsgBuf->next != NULL) {
+                ecClientPtr->writeMsgBuf = wMsgBuf->next;
+                freeMessageBuf(wMsgBuf);
+                wMsgBuf = ecClientPtr->writeMsgBuf;
             }else{
-                writeMsgBuf->rOffset = 0;
-                writeMsgBuf->wOffset = 0;
+                wMsgBuf->rOffset = 0;
+                wMsgBuf->wOffset = 0;
             }
         }
     }
@@ -554,8 +555,7 @@ void writeContentToClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPt
     
     ecClientPtr->readTotal =  ecClientPtr->readTotal + diskJobPtr->bufHandledSize;
     ecClientPtr->readPendingToWriteToSockTotal = ecClientPtr->readPendingToWriteToSockTotal + diskJobPtr->bufHandledSize;
-//    printf("sockFd:%d, totalRead:%lu, totalReq:%lu, readPendingToWriteToSockTotal:%lu\n",ecClientPtr->sockFd, ecClientPtr->readTotal,ecClientPtr->readRequestTotal, ecClientPtr->readPendingToWriteToSockTotal);
-
+    ecClientPtr->pendingWriteSizeToSock = ecClientPtr->pendingWriteSizeToSock + diskJobPtr->bufHandledSize;
     
     size_t writeSize = 0;
     processClientOutMsg(ecClientMgr, ecClientPtr, &writeSize);

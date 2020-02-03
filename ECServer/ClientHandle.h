@@ -66,6 +66,9 @@ typedef struct ECClient{
     ECMessageBuffer_t *readMsgBuf;
     ECMessageBuffer_t *writeMsgBuf;
     
+    size_t writedSizeToSock;
+    size_t pendingWriteSizeToSock;
+    
     struct timeval startTime;
     struct timeval endTime;
     

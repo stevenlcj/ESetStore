@@ -134,8 +134,6 @@ void getBlockFd(ECBlockWorker_t *blockWorkerPtr){
 	char fdStr[] = "BlockFd:\0";
 	char suffix[] = "\r\n\0";
 	blockWorkerPtr->blockFd = getIntValueBetweenStrings(fdStr, suffix, blockWorkerPtr->readMsgBuf->buf);
-
-    printf("get blockFd:%d for block:%llu\n", blockWorkerPtr->blockFd,blockWorkerPtr->blockId);
 }
 
 int recvReplyFromBlockServer(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECBlockWorker_t *blockWorkerPtr){
@@ -181,6 +179,7 @@ int recvReplyFromBlockServer(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECBlockWo
 				if (strncmp(blockWorkerPtr->readMsgBuf->buf, blockOpenOK, strlen(blockOpenOK)) == 0)
 				{
 					getBlockFd(blockWorkerPtr);
+                    printf("get blockFd:%d for block:%llu\n", blockWorkerPtr->blockFd,blockWorkerPtr->blockId);
 				}else if(strncmp(blockWorkerPtr->readMsgBuf->buf, blockOpenFailed, strlen(blockOpenFailed)) == 0){
 					printf("BlockOpenFailed for block:%lu\n", blockWorkerPtr->blockId);
 				}else{
@@ -266,6 +265,25 @@ int openBlockForRead(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECBlockWorker_t *
 	return 0;
 }
 
+void iterateUnFinishedBlockworker(ECBlockWorkerManager_t *ecBlockWorkerMgr){
+    ECFile_t *ecFilePtr = ecBlockWorkerMgr->curFilePtr;
+    ECBlockWorker_t *blockWorkerPtr = ecFilePtr->blockWorkers;
+    int bIdx = 0;
+    do
+    {
+        
+        if (blockWorkerPtr->curState = Worker_STATE_REQUEST_READ)
+        {
+            blockWorkerPtr->readMsgBuf->buf[blockWorkerPtr->readMsgBuf->wOffset] = '\0';
+            printf("Recvd size:%lu, content:%s\n",
+                   blockWorkerPtr->readMsgBuf->wOffset,blockWorkerPtr->readMsgBuf->buf)
+        }
+        
+        blockWorkerPtr = blockWorkerPtr->next;
+        ++bIdx;
+    }while((size_t) bIdx != ecFilePtr->stripeK);
+}
+
 void processingMonitoringRq(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 	if (ecBlockWorkerMgr->inMonitoringSockNum == 0)
 	{
@@ -276,6 +294,12 @@ void processingMonitoringRq(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 	int idx, eventsNum;
 	eventsNum = epoll_wait(ecBlockWorkerMgr->eFd, events, MAX_EVENTS,CONNECTING_TIME_OUT_IN_MS);
 
+    if (eventsNum == 0) {
+        iterateUnFinishedBlockworker(ecBlockWorkerMgr);
+        continue;
+    }
+    
+    
 	for (idx = 0; idx < eventsNum; ++idx)
 	{
         ECBlockWorker_t *blockWorkerPtr = (ECBlockWorker_t *)events[idx].data.ptr;
@@ -983,11 +1007,11 @@ void reqECBlockRead(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECBlockWorker_t *b
                                                                  readSize);
     
     ++ecBlockWorkerMgr->curInFlightReq;
-    printf("start to send blockId:%llu, read size:%lu\n",blockWorkerPtr->blockId, readSize);
+//    printf("start to send blockId:%llu, read size:%lu\n",blockWorkerPtr->blockId, readSize);
     writeReadDataSize(ecBlockWorkerMgr, blockWorkerPtr);
     
     flushReqToServer(ecBlockWorkerMgr);
-    printf("finish send blockId:%llu, read size:%lu\n",blockWorkerPtr->blockId, readSize);
+//    printf("finish send blockId:%llu, read size:%lu\n",blockWorkerPtr->blockId, readSize);
 }
 
 ssize_t performReadDataFromBlockServer(ECBlockWorker_t *blockWorkerPtr, char *buf, size_t readSize){
@@ -997,7 +1021,6 @@ ssize_t performReadDataFromBlockServer(ECBlockWorker_t *blockWorkerPtr, char *bu
     
     return readedSize;
 }
-
 void waitDataFromBlockServer(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECFile_t *ecFilePtr,
                              size_t startOffset, size_t readSize){
     if (ecBlockWorkerMgr->inMonitoringSockNum == 0) {
@@ -1010,14 +1033,14 @@ void waitDataFromBlockServer(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECFile_t 
     int idx, eventsNum;
     eventsNum = epoll_wait(ecBlockWorkerMgr->eFd, events, MAX_EVENTS,CONNECTING_TIME_OUT_IN_MS);
     
+    
     for (idx = 0; idx < eventsNum; ++idx)
     {
         ECBlockWorker_t *blockWorkerPtr = (ECBlockWorker_t *)events[idx].data.ptr;
         
         if (events[idx].events & EPOLLIN)
         {
-            ssize_t readedSize = performReadDataFromBlockServer(
-                                                                blockWorkerPtr,
+            ssize_t readedSize = performReadDataFromBlockServer(blockWorkerPtr,
                                                                 (ecFilePtr->buf + startOffset), readSize);
             
             if (readedSize < 0) {

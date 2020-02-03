@@ -168,6 +168,7 @@ size_t getFileSize(ECClientEngine_t *clientEnginePtr, int fileFd){
 }
 
 ssize_t readFile(ECClientEngine_t *clientEnginePtr, int fileFd, char *buf, size_t readSize){
+    printf ("tid:%s, __FUNCTION__ = %s\n",pthread_self(), __FUNCTION__);
     ECFile_t *ecFile = clientEnginePtr->ecFileMgr->ecFiles + fileFd;
     
     if(ecFile->fileCurState != ECFILE_STATE_READ && ecFile->fileCurState != ECFILE_STATE_OPEN){
@@ -191,7 +192,9 @@ ssize_t readFile(ECClientEngine_t *clientEnginePtr, int fileFd, char *buf, size_
 
     if (ecFile->fileCurState == ECFILE_STATE_READ ) {
         //printf("call readECFile\n");
-        return readECFile(clientEnginePtr->ecFileMgr, fileFd, buf, readSize);
+        ssize_t readSize = readECFile(clientEnginePtr->ecFileMgr, fileFd, buf, readSize);
+        printf ("tid:%s, __FUNCTION__ = %s done\n",pthread_self(), __FUNCTION__);
+        return readSize
     }
     
     printf("ecFile->fileCurState != ECFILE_STATE_READ\n");
@@ -200,8 +203,10 @@ ssize_t readFile(ECClientEngine_t *clientEnginePtr, int fileFd, char *buf, size_
 
 ssize_t writeFile(ECClientEngine_t *clientEnginePtr, int fileFd, char *buf, size_t writeSize){
     //printf("to writeFile writeSize:%lu\n", writeSize);
+    printf ("tid:%s, __FUNCTION__ = %s\n",pthread_self(), __FUNCTION__);
     ssize_t writedSize = writeECFile(clientEnginePtr->ecFileMgr, fileFd, buf, writeSize);
-    
+    printf ("tid:%s, __FUNCTION__ = %s writedSize:%ld\n",pthread_self(), __FUNCTION__,writedSize);
+
     if (writedSize <= 0) {
         return 0;
     }
@@ -214,6 +219,8 @@ ssize_t writeFile(ECClientEngine_t *clientEnginePtr, int fileFd, char *buf, size
 }
 
 int deleteFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
+    printf ("tid:%s, __FUNCTION__ = %s\n",pthread_self(), __FUNCTION__);
+
     char *deleteCmd = formDeleteFileCmd(FileName);
     
     ssize_t writeSize = writeCmdToMeta(clientEnginePtr, deleteCmd) ;
@@ -228,6 +235,8 @@ int deleteFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
     char OKStr[]="DeleteOK\0";
     ssize_t recvSize = recvMetaReply(clientEnginePtr->metaSockFd, recvBuf, 1024);
     
+    printf ("tid:%s, __FUNCTION__ = %sdone\n",pthread_self(), __FUNCTION__);
+
     //printf("deleteFile recvd:%s\n", recvBuf);
     if (recvSize <= (ssize_t) strlen(OKStr) || strncmp(recvBuf, OKStr, strlen(OKStr)) != 0) {
         return -1;

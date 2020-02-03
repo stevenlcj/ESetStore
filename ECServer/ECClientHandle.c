@@ -494,7 +494,7 @@ int processClientOutMsg(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr,
         
         if (ecClientPtr->readPendingToWriteToSockTotal > 0) {
             ecClientPtr->readPendingToWriteToSockTotal = ecClientPtr->readPendingToWriteToSockTotal - wSize;
-            printf("processClientOutMsg:sockFd:%d, totalRead:%lu, totalReq:%lu, readPendingToWriteToSockTotal:%lu\n",ecClientPtr->sockFd, ecClientPtr->readTotal,ecClientPtr->readRequestTotal, ecClientPtr->readPendingToWriteToSockTotal);
+//            printf("processClientOutMsg:sockFd:%d, totalRead:%lu, totalReq:%lu, readPendingToWriteToSockTotal:%lu\n",ecClientPtr->sockFd, ecClientPtr->readTotal,ecClientPtr->readRequestTotal, ecClientPtr->readPendingToWriteToSockTotal);
         }
         
         

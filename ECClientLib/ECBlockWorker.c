@@ -297,8 +297,8 @@ void deallocBlockWorkerMgr(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 	//printf("ecBlockWorkerMgr->blockWorkers\n");
 	free(ecBlockWorkerMgr->blockWorkers);
     
-    pthread_join(coderWorker->pid, NULL);
-	deallocECCoderWorker(coderWorker);
+//    pthread_join(coderWorker->pid, NULL);
+//    deallocECCoderWorker(coderWorker);
 
 	sem_destroy(&ecBlockWorkerMgr->jobStartSem);
 	sem_destroy(&ecBlockWorkerMgr->jobFinishedSem);

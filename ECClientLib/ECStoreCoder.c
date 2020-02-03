@@ -64,7 +64,8 @@ void performCodingJob(ECCoderWorker_t *coderWorker){
 				performDecodingJob(coderWorker, ecBlockWorkerMgr, filePtr);
 			break;
 			default:
-				printf("Unknow job for coder\n");
+                coderWorker->exitFlag = 1;
+                return;
 				//exit(0);
 		}
 
@@ -84,6 +85,8 @@ void *ecStoreCoderWorker(void *arg){
 
 		performCodingJob(coderWorker);
 	}
+
+    deallocECCoderWorker(coderWorker);
 
 	return arg;
 }

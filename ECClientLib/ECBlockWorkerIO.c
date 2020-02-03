@@ -296,9 +296,7 @@ void processingMonitoringRq(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 
     if (eventsNum == 0) {
         iterateUnFinishedBlockworker(ecBlockWorkerMgr);
-        continue;
     }
-    
     
 	for (idx = 0; idx < eventsNum; ++idx)
 	{

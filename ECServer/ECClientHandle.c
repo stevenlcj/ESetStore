@@ -129,6 +129,7 @@ int processClientCreateRequest(ECClientManager_t *ecClientMgr, ECClient_t *ecCli
 	ecClientPtr->blockId = getUInt64ValueBetweenStrs(blockIdStr, suffixStr, ecClientPtr->readMsgBuf->buf, ecClientPtr->readMsgBuf->wOffset);
 	
 	//printf("Create file with blockId:%lu\n", ecClientPtr->blockId);
+    printf("sockFd:%d create block:%llu\n",ecClientPtr->sockFd, ecClientPtr->blockId);
 
 	ecClientPtr->fileFd = startWriteFile(ecClientPtr->blockId, diskIOPtr);
 
@@ -321,7 +322,7 @@ int processClientCloseRequest(ECClientManager_t *ecClientMgr, ECClient_t *ecClie
 	ecClientPtr->blockId = getUInt64ValueBetweenStrs(blockIdStr, suffixStr, ecClientPtr->readMsgBuf->buf, ecClientPtr->readMsgBuf->wOffset);
 	ecClientPtr->fileFd = getIntValueBetweenStrings(blockFdStr, suffixStr, ecClientPtr->readMsgBuf->buf);
 
-	//printf("Close block:%lu, fd:%d\n", ecClientPtr->blockId, ecClientPtr->fileFd);
+    printf("Sock:%d, Close block:%lu, fd:%d\n",ecClientPtr->sockFd, ecClientPtr->blockId, ecClientPtr->fileFd);
 	closeFile(ecClientPtr->fileFd, diskIOPtr);
 
 	return 0;
@@ -549,7 +550,7 @@ void writeContentToClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPt
     
     ecClientPtr->readTotal =  ecClientPtr->readTotal + diskJobPtr->bufHandledSize;
     ecClientPtr->readPendingToWriteToSockTotal = ecClientPtr->readPendingToWriteToSockTotal + diskJobPtr->bufHandledSize;
-    printf("sockFd:%d, totalRead:%lu, totalReq:%lu, readPendingToWriteToSockTotal:%lu\n",ecClientPtr->sockFd, ecClientPtr->readTotal,ecClientPtr->readRequestTotal, ecClientPtr->readPendingToWriteToSockTotal);
+//    printf("sockFd:%d, totalRead:%lu, totalReq:%lu, readPendingToWriteToSockTotal:%lu\n",ecClientPtr->sockFd, ecClientPtr->readTotal,ecClientPtr->readRequestTotal, ecClientPtr->readPendingToWriteToSockTotal);
 
     
     size_t writeSize = 0;

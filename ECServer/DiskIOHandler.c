@@ -210,7 +210,6 @@ int startAppendFile(uint64_t fileId,DiskIOManager_t *diskIOMgr){
 }
 
 int startReadFile(uint64_t fileId,DiskIOManager_t *diskIOMgr){
-    printf("Start read file with fd:%lu\n", fileId);
     if (diskIOMgr->diskIOSize == diskIOMgr->diskIONum) {
         return -1;
     }

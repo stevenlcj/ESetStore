@@ -209,6 +209,8 @@ int processClientOpenRequest(ECClientManager_t *ecClientMgr, ECClient_t *ecClien
 	char blockIdStr[] = "BlockId:\0";
 	char suffixStr[] = "\r\n\0";
 	ecClientPtr->blockId = getUInt64ValueBetweenStrs(blockIdStr, suffixStr, ecClientPtr->readMsgBuf->buf, ecClientPtr->readMsgBuf->wOffset);
+    
+    printf("sockFd:%d start To read:%llu\n",ecClientPtr->sockFd, ecClientPtr->blockId);
 	ecClientPtr->fileFd = startReadFile(ecClientPtr->blockId, diskIOPtr);
 
 	if (ecClientPtr->fileFd >= 0)
@@ -301,7 +303,7 @@ int processClientReadingRequest(ECClientManager_t *ecClientMgr, ECClient_t *ecCl
 	ecClientPtr->reqSize =	getIntValueBetweenStrings(readSize, suffixStr, ecClientPtr->readMsgBuf->buf);
 	ecClientPtr->handledSize = 0;
 
-	//printf("BlockId:%lu, fileFd:%d, reqReadSize:%lu\n",ecClientPtr->blockId, ecClientPtr->fileFd, ecClientPtr->reqSize );
+    printf("sockFd:%d, blockId:%llu, reqReadSize:%lu\n",ecClientPtr->sockFd, ecClientPtr->blockId, ecClientPtr->reqSize );
 	return submitReadJobToDiskWorker(ecClientMgr, ecClientPtr);
 }
 
@@ -517,15 +519,13 @@ void writeContentToClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPt
         writeMsgBufPtr = writeMsgBufPtr->next;
     }
     
-    //printf("recv readdone job with size:%lu, bufHandledSize:%lu\n", diskJobPtr->bufReqSize, diskJobPtr->bufHandledSize);
+    printf("sockFd:%d, blockId:%llu, disk reqSize:%lu, handledSize:%lu\n",ecClientPtr->sockFd, ecClientPtr->blockId,diskJobPtr->bufReqSize, diskJobPtr->bufHandledSize);
     
     while (diskJobPtr->bufReqSize != diskJobPtr->bufHandledSize) {
         cpSize = (writeMsgBufPtr->bufSize - writeMsgBufPtr->wOffset) > (diskJobPtr->bufReqSize - diskJobPtr->bufHandledSize)
         ? (diskJobPtr->bufReqSize - diskJobPtr->bufHandledSize)
         : (ecClientPtr->reqSize - cpedSize);
-        
-        //printf("cpSize:%lu\n", cpSize);
-        
+                
         memcpy(writeMsgBufPtr->buf + writeMsgBufPtr->wOffset,
                diskJobPtr->buf + diskJobPtr->bufHandledSize, cpSize);
         

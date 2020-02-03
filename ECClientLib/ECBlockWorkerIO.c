@@ -276,7 +276,7 @@ void iterateUnFinishedBlockworker(ECBlockWorkerManager_t *ecBlockWorkerMgr){
         {
             blockWorkerPtr->readMsgBuf->buf[blockWorkerPtr->readMsgBuf->wOffset] = '\0';
             printf("Recvd size:%lu, content:%s\n",
-                   blockWorkerPtr->readMsgBuf->wOffset,blockWorkerPtr->readMsgBuf->buf)
+                   blockWorkerPtr->readMsgBuf->wOffset,blockWorkerPtr->readMsgBuf->buf);
         }
         
         blockWorkerPtr = blockWorkerPtr->next;

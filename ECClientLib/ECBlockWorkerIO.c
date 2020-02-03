@@ -1143,6 +1143,18 @@ void startReadECBlock(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECFile_t *ecFile
     }while(ecFilePtr->bufHandledSize != ecFilePtr->bufWritedSize);
 }
 
+void workerPerformReadPrint(ECBlockWorkerManager_t *ecBlockWorkerMgr,char *msg){
+    ECFile_t *ecFilePtr = ecBlockWorkerMgr->curFilePtr;
+    ECBlockWorker_t *blockWorkerPtr = ecFilePtr->blockWorkers;
+    int bIdx = 0;
+    do
+    {
+        printf("%sblockId:%llu startWorkerPerformRead\n",msg,blockWorkerPtr->blockId);
+        blockWorkerPtr = blockWorkerPtr->next;
+        ++bIdx;
+    }while((size_t) bIdx != ecFilePtr->stripeK);
+}
+
 void workerPerformRead(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 	ECFile_t *ecFilePtr = ecBlockWorkerMgr->curFilePtr;
 	ecBlockWorkerMgr->curInFlightReq = 0;
@@ -1152,6 +1164,8 @@ void workerPerformRead(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 //    
 //    writedSize = ecFilePtr->bufWritedSize;
 //    gettimeofday(&startTime, NULL);
+    
+    workerPerformReadPrint(ecBlockWorkerMgr, "Startread:");
 
     ECBlockWorker_t *blockWorkerPtr = ecFilePtr->blockWorkers;
     size_t margin = ecFilePtr->streamingSize * ecFilePtr->stripeK;
@@ -1176,6 +1190,8 @@ void workerPerformRead(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 //    printf("writeSize:%luKB, Interval:%fms,throughput:%fMB/s\n",(writeSize/1024), timeInterval, throughput);
 
 	ecBlockWorkerMgr->jobDoneFlag = 1;
+    
+    workerPerformReadPrint(ecBlockWorkerMgr, "Endread:");
 	sem_post(&ecBlockWorkerMgr->jobFinishedSem);
 }
 

@@ -651,6 +651,7 @@ ssize_t performWriteJob(ECFileManager_t *ecFileMgr, int ecFd, char *writeBuf, si
    
 //    submitReadWriteJob(ecBlockWorkerMgr);
 //    waitReadWriteJobDone(ecBlockWorkerMgr);
+    ECCoderWorker_t *coderWorker = (ECCoderWorker_t *)ecBlockWorkerMgr->coderWorker;
     coderWorker->jobFinishedFlag = 0;
     sem_post(&coderWorker->jobStartSem);
     workerPerformWrite(ecBlockWorkerMgr);
@@ -695,9 +696,12 @@ ssize_t performReadJob(ECFileManager_t *ecFileMgr, int ecFd, char *readBuf, size
         workerPerformRead(ecBlockWorkerMgr);
     }else if(ecBlockWorkerMgr->curJobState == ECJOB_DEGRADED_READ){
         workerPerformReadPrint(ecBlockWorkerMgr,"ECJOB_DEGRADED_READ:");
+        ECCoderWorker_t *coderWorker = (ECCoderWorker_t *)ecBlockWorkerMgr->coderWorker;
         coderWorker->jobFinishedFlag = 0;
         sem_post(&coderWorker->jobStartSem);
         workerPerformDegradedRead(ecBlockWorkerMgr);
+    }else{
+        workerPerformReadPrint(ecBlockWorkerMgr,"Unknow Job for read?:");
     }
     
 	return (ssize_t) ecFilePtr->bufHandledSize;

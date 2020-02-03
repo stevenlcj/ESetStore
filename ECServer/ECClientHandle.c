@@ -216,8 +216,10 @@ int processClientOpenRequest(ECClientManager_t *ecClientMgr, ECClient_t *ecClien
 
 	if (ecClientPtr->fileFd >= 0)
 	{
+        printf("open OK to sock:%d To read:%llu\n",ecClientPtr->sockFd, ecClientPtr->blockId);
 		addOpenOKCmd(ecClientPtr);
 	}else{
+        printf("open Failed to sock:%d To read:%llu\n",ecClientPtr->sockFd, ecClientPtr->blockId);
 		addOpenFailedCmd(ecClientPtr);
 	}
 
@@ -226,6 +228,7 @@ int processClientOpenRequest(ECClientManager_t *ecClientMgr, ECClient_t *ecClien
 		size_t writeSize = 0;
 
 		processClientOutMsg(ecClientMgr, ecClientPtr, &writeSize);
+        printf("write:%lu to sock:%d To read:%llu\n",writeSize,ecClientPtr->sockFd, ecClientPtr->blockId);
 	}
 
 	return 0;
@@ -372,7 +375,7 @@ int writeDataToDisk(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
 
 int getClientInCmd(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
 	ECCLIENT_IN_STATE_t inCmdState = parseClientInCmd(ecClientPtr);
-    printf("recv cmd from scok:%d\n",ecClientPtr->sockFd);
+//    printf("recv cmd from scok:%d\n",ecClientPtr->sockFd);
 	switch(inCmdState){
 		case ECCLIENT_IN_STATE_CREATE:{
 			processClientCreateRequest(ecClientMgr, ecClientPtr);

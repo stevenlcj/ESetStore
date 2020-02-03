@@ -993,7 +993,7 @@ void reqECBlockRead(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECBlockWorker_t *b
 ssize_t performReadDataFromBlockServer(ECBlockWorker_t *blockWorkerPtr, char *buf, size_t readSize){
     
     ssize_t readedSize = recv(blockWorkerPtr->sockFd, buf, readSize, 0);
-    printf("blockId:%llu, recvd size:%ld\n",blockWorkerPtr->blockId, readedSize);
+//    printf("blockId:%llu, recvd size:%ld\n",blockWorkerPtr->blockId, readedSize);
     
     return readedSize;
 }

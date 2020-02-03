@@ -116,7 +116,7 @@ void startECClientManager(ECClientManager_t *ecClientMgr){
 void printRemainingClients(ECClientManager_t *ecClientMgr){
         ECClient_t *ecClientPtr = ecClientMgr->monitoringClients;
             while (ecClientPtr != NULL) {
-                printf("sock:%d, blockId:%llu reqSize:%lu, handledSize:%lu\n",ecClientPtr->sockFd ecClientPtr->blockId,ecClientPtr->reqSize, ecClientPtr->handledSize);
+                printf("sock:%d, blockId:%llu reqSize:%lu, handledSize:%lu\n",ecClientPtr->sockFd, ecClientPtr->blockId,ecClientPtr->reqSize, ecClientPtr->handledSize);
                                 ecClientPtr = ecClientPtr->next;
         }
 }

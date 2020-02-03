@@ -519,13 +519,13 @@ void writeContentToClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPt
         writeMsgBufPtr = writeMsgBufPtr->next;
     }
     
-    printf("sockFd:%d, blockId:%llu, disk reqSize:%lu, handledSize:%lu\n",ecClientPtr->sockFd, ecClientPtr->blockId,diskJobPtr->bufReqSize, diskJobPtr->bufHandledSize);
+    printf("sockFd:%d, blockId:%llu, disk reqSize:%lu, handledSize:%lu diskJobPtr:%p\n",ecClientPtr->sockFd, ecClientPtr->blockId,diskJobPtr->bufReqSize, diskJobPtr->bufHandledSize,diskJobPtr);
     
     while (diskJobPtr->bufReqSize != diskJobPtr->bufHandledSize) {
         cpSize = (writeMsgBufPtr->bufSize - writeMsgBufPtr->wOffset) > (diskJobPtr->bufReqSize - diskJobPtr->bufHandledSize)
         ? (diskJobPtr->bufReqSize - diskJobPtr->bufHandledSize)
         : (ecClientPtr->reqSize - cpedSize);
-                
+        
         memcpy(writeMsgBufPtr->buf + writeMsgBufPtr->wOffset,
                diskJobPtr->buf + diskJobPtr->bufHandledSize, cpSize);
         

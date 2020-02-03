@@ -649,8 +649,11 @@ ssize_t performWriteJob(ECFileManager_t *ecFileMgr, int ecFd, char *writeBuf, si
 		setWorkerBufs(ecBlockWorkerMgr, ecFilePtr);
 	}
    
-	submitReadWriteJob(ecBlockWorkerMgr);
-	waitReadWriteJobDone(ecBlockWorkerMgr);
+//    submitReadWriteJob(ecBlockWorkerMgr);
+//    waitReadWriteJobDone(ecBlockWorkerMgr);
+    coderWorker->jobFinishedFlag = 0;
+    sem_post(&coderWorker->jobStartSem);
+    workerPerformWrite(ecBlockWorkerMgr);
 
 	return (ssize_t) ecFilePtr->bufWritedSize;
 }
@@ -685,10 +688,17 @@ ssize_t performReadJob(ECFileManager_t *ecFileMgr, int ecFd, char *readBuf, size
 		setWorkerBufs(ecBlockWorkerMgr, ecFilePtr);
 	}
 
-    workerPerformReadPrint(ecBlockWorkerMgr,"submitReadWriteJob:");
-	submitReadWriteJob(ecBlockWorkerMgr);
-	waitReadWriteJobDone(ecBlockWorkerMgr);
-    workerPerformReadPrint(ecBlockWorkerMgr,"waitReadWriteJobDoneEnd:");
+	//submitReadWriteJob(ecBlockWorkerMgr);
+	//waitReadWriteJobDone(ecBlockWorkerMgr);
+    if (ecBlockWorkerMgr->curJobState == ECJOB_READ) {
+        workerPerformReadPrint(ecBlockWorkerMgr,"ECJOB_READ:");
+        workerPerformRead(ecBlockWorkerMgr);
+    }else if(ecBlockWorkerMgr->curJobState == ECJOB_DEGRADED_READ){
+        workerPerformReadPrint(ecBlockWorkerMgr,"ECJOB_DEGRADED_READ:");
+        coderWorker->jobFinishedFlag = 0;
+        sem_post(&coderWorker->jobStartSem);
+        workerPerformDegradedRead(ecBlockWorkerMgr);
+    }
     
 	return (ssize_t) ecFilePtr->bufHandledSize;
 }

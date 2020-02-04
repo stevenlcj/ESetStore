@@ -1187,7 +1187,8 @@ void workerPerformRead(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 
 	ecBlockWorkerMgr->jobDoneFlag = 1;
     
-	sem_post(&ecBlockWorkerMgr->jobFinishedSem);
+    PRINT_ROUTINE_VALUE(ecFilePtr->bufWritedSize);
+//    sem_post(&ecBlockWorkerMgr->jobFinishedSem);
 }
 
 void waitDegradeDataFromBlockServer(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECBlockWorker_t *blockWorkerPtr, char *buf, size_t readSize){

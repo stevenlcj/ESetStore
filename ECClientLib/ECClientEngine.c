@@ -171,6 +171,8 @@ ssize_t readFile(ECClientEngine_t *clientEnginePtr, int fileFd, char *buf, size_
     //printf ("tid:%ld, __FUNCTION__ = %s\n",pthread_self(), __FUNCTION__);
     ECFile_t *ecFile = clientEnginePtr->ecFileMgr->ecFiles + fileFd;
     
+    PRINT_ROUTINE
+    
     if(ecFile->fileCurState != ECFILE_STATE_READ && ecFile->fileCurState != ECFILE_STATE_OPEN){
         printf("fileCurState != ECFILE_STATE_READ && fileCurState != ECFILE_STATE_OPEN \n");
         return -1;

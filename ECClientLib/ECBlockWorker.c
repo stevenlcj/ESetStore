@@ -704,7 +704,6 @@ ssize_t performReadJob(ECFileManager_t *ecFileMgr, int ecFd, char *readBuf, size
         sem_post(&coderWorker->jobStartSem);
         
         void workerPerformDegradedRead(ECBlockWorkerManager_t *ecBlockWorkerMgr);
-        
         workerPerformDegradedRead(ecBlockWorkerMgr);
     }else{
         workerPerformReadPrint(ecBlockWorkerMgr,"Unknow Job for read?:");

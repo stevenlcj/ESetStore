@@ -46,7 +46,7 @@ int performDiskReadJob(RecoveryThreadManager_t *recoveryThMgr, recoveryBuf_t *cu
         }
         
         if (blockInfoPtr->fd == -1) {
-            blockInfoPtr->fd = startReadFile(blockInfoPtr->blockId, ecBlockServerEnginePtr->diskIOMgr);
+            blockInfoPtr->fd = startReadFile(blockInfoPtr->blockId, ecBlockServerEnginePtr->diskIOMgr, ecBlockServerEnginePtr->metaFd);
         }
         
         if (blockInfoPtr->fd < 0) {
@@ -109,7 +109,7 @@ void performWriteDiskJob(RecoveryThreadManager_t *recoveryThMgr, int bufIdx){
         
         if (blockInfoPtr->fd == -1) {
             printf("startWriteFile\n");
-            blockInfoPtr->fd = startWriteFile(blockInfoPtr->blockId, ecBlockServerEnginePtr->diskIOMgr);
+            blockInfoPtr->fd = startWriteFile(blockInfoPtr->blockId, ecBlockServerEnginePtr->diskIOMgr, ecBlockServerEnginePtr->metaFd);
         }
         
         if (blockInfoPtr->fd < 0) {

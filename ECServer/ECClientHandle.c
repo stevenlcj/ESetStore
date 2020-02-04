@@ -128,7 +128,7 @@ int processClientCreateRequest(ECClientManager_t *ecClientMgr, ECClient_t *ecCli
 	//printf("Create file with blockId:%lu\n", ecClientPtr->blockId);
     printf("sockFd:%d create block:%llu\n",ecClientPtr->sockFd, ecClientPtr->blockId);
 
-	ecClientPtr->fileFd = startWriteFile(ecClientPtr->blockId, diskIOPtr);
+	ecClientPtr->fileFd = startWriteFile(ecClientPtr->blockId, diskIOPtr, ecClientPtr->sockFd);
 
 	if (ecClientPtr->fileFd >= 0)
 	{
@@ -212,15 +212,14 @@ int processClientOpenRequest(ECClientManager_t *ecClientMgr, ECClient_t *ecClien
 	char suffixStr[] = "\r\n\0";
 	ecClientPtr->blockId = getUInt64ValueBetweenStrs(blockIdStr, suffixStr, ecClientPtr->readMsgBuf->buf, ecClientPtr->readMsgBuf->wOffset);
     
-    printf("sockFd:%d start To read:%llu\n",ecClientPtr->sockFd, ecClientPtr->blockId);
-	ecClientPtr->fileFd = startReadFile(ecClientPtr->blockId, diskIOPtr);
+	ecClientPtr->fileFd = startReadFile(ecClientPtr->blockId, diskIOPtr,ecClientPtr->sockFd);
 
 	if (ecClientPtr->fileFd >= 0)
 	{
-        printf("open OK to sock:%d To read:%llu\n",ecClientPtr->sockFd, ecClientPtr->blockId);
+        printf("Open OK for sock:%d To read:%llu\n",ecClientPtr->sockFd, ecClientPtr->blockId);
 		addOpenOKCmd(ecClientPtr);
 	}else{
-        printf("open Failed to sock:%d To read:%llu\n",ecClientPtr->sockFd, ecClientPtr->blockId);
+        printf("Open Failed for sock:%d To read:%llu\n",ecClientPtr->sockFd, ecClientPtr->blockId);
 		addOpenFailedCmd(ecClientPtr);
 	}
 

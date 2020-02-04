@@ -140,6 +140,9 @@ void removeClient(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
         delete_event(ecClientMgr->efd, ecClientPtr->sockFd);
     }
     
+    ECBlockServerEngine_t *blockServerEnginePtr = (ECBlockServerEngine_t *) ecClientMgr->serverEnginePtr;
+    closeFileBySockFd(ecClientPtr->sockFd, blockServerEnginePtr->diskIOMgr);
+    
     close(ecClientPtr->sockFd);
 
     if (ecClientMgr->monitoringClients == ecClientPtr) {

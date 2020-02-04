@@ -22,6 +22,8 @@ typedef struct {
     size_t fileNameSize;
     size_t fileSize;
     
+    int openedBySock;
+    
     uint64_t fileCheckSum;
     uint64_t blockId;
     
@@ -47,13 +49,14 @@ typedef struct {
 
 DiskIOManager_t *createDiskIOMgr(void *serverEngine);
 
-int startWriteFile(uint64_t fileId,DiskIOManager_t *diskIOMgr);
-int startAppendFile(uint64_t fileId,DiskIOManager_t *diskIOMgr);
-int startReadFile(uint64_t fileId,DiskIOManager_t *diskIOMgr);
+int startWriteFile(uint64_t fileId,DiskIOManager_t *diskIOMgr, int sockFd);
+int startAppendFile(uint64_t fileId,DiskIOManager_t *diskIOMgr, int sockFd);
+int startReadFile(uint64_t fileId,DiskIOManager_t *diskIOMgr, int sockFd);
 
 ssize_t writeFile(int fd, char *buf, size_t writeSize, DiskIOManager_t *diskIOMgr);
 ssize_t readFile(int fd, char *buf, size_t readSize, DiskIOManager_t *diskIOMgr);
 
+void closeFileBySockFd(int sockFd, DiskIOManager_t *diskIOMgr);
 void closeFile(int fd, DiskIOManager_t *diskIOMgr);
 
 int deleteFile(uint64_t fileId,DiskIOManager_t *diskIOMgr);

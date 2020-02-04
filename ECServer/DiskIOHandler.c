@@ -69,8 +69,9 @@ int getFileId(DiskIOManager_t *diskIOMgr, uint64_t fileId){
     return -1;
 }
 
-int initReadFileInfo(DiskIO_t *diskIOPtr, uint64_t fileId, char *dirPath){
+int initReadFileInfo(DiskIO_t *diskIOPtr, uint64_t fileId, char *dirPath, int sockFd){
     diskIOPtr->blockId = fileId;
+    diskIOPtr->openedBySock = sockFd;
     diskIOPtr->fileNameSize = uint64_to_str(fileId, diskIOPtr->fileName, FILE_NAME_BUF_SIZE);
     
     size_t strSize = strlen(fileMetaSuffix);
@@ -114,8 +115,9 @@ int initReadFileInfo(DiskIO_t *diskIOPtr, uint64_t fileId, char *dirPath){
 }
 
 //Form fileName:fileId.raw fileMetaName:fileId.Meta
-int initCreateFileInfo(DiskIO_t *diskIOPtr, uint64_t fileId, char *dirPath){
+int initCreateFileInfo(DiskIO_t *diskIOPtr, uint64_t fileId, char *dirPath, int sockFd){
     diskIOPtr->blockId = fileId;
+    diskIOPtr->openedBySock = sockFd;
     diskIOPtr->fileNameSize = uint64_to_str(fileId, diskIOPtr->fileName, FILE_NAME_BUF_SIZE);
     
     size_t strSize = strlen(fileMetaSuffix);
@@ -145,6 +147,7 @@ int initCreateFileInfo(DiskIO_t *diskIOPtr, uint64_t fileId, char *dirPath){
         return -1;
     }
     
+    
 //    printf("Opened file with fd:%d\n", diskIOPtr->fileFd);
     
 //    if ((diskIOPtr->fileMetaFd = open(diskIOPtr->fileMetaName, O_RDWR | O_CREAT)) == -1) {
@@ -159,7 +162,7 @@ int initCreateFileInfo(DiskIO_t *diskIOPtr, uint64_t fileId, char *dirPath){
     return 0;
 }
 
-int startWriteFile(uint64_t fileId, DiskIOManager_t *diskIOMgr){
+int startWriteFile(uint64_t fileId, DiskIOManager_t *diskIOMgr, int sockFd){
     if (diskIOMgr->diskIOSize == diskIOMgr->diskIONum) {
         return -1;
     }
@@ -175,7 +178,7 @@ int startWriteFile(uint64_t fileId, DiskIOManager_t *diskIOMgr){
         
         if (*(diskIOMgr->diskIOIndicators+idx) == 0) {
             
-            if (initCreateFileInfo((diskIOMgr->diskIOPtrs + idx), fileId, diskIOMgr->filePath) == -1) {
+            if (initCreateFileInfo((diskIOMgr->diskIOPtrs + idx), fileId, diskIOMgr->filePath, sockFd) == -1) {
                 pthread_mutex_unlock(&diskIOMgr->lock);
                 return -1;
             }
@@ -191,7 +194,7 @@ int startWriteFile(uint64_t fileId, DiskIOManager_t *diskIOMgr){
     return -1;
 }
 
-int startAppendFile(uint64_t fileId,DiskIOManager_t *diskIOMgr){
+int startAppendFile(uint64_t fileId,DiskIOManager_t *diskIOMgr, int sockFd){
     if (diskIOMgr->diskIOSize == diskIOMgr->diskIONum) {
         return -1;
     }
@@ -209,7 +212,7 @@ int startAppendFile(uint64_t fileId,DiskIOManager_t *diskIOMgr){
     return -1;
 }
 
-int startReadFile(uint64_t fileId,DiskIOManager_t *diskIOMgr){
+int startReadFile(uint64_t fileId,DiskIOManager_t *diskIOMgr, int sockFd){
     if (diskIOMgr->diskIOSize == diskIOMgr->diskIONum) {
         return -1;
     }
@@ -223,7 +226,7 @@ int startReadFile(uint64_t fileId,DiskIOManager_t *diskIOMgr){
     int idx;
     for (idx = 0; idx < diskIOMgr->diskIOSize; ++idx) {
         if (*(diskIOMgr->diskIOIndicators+idx) == 0) {
-            if (initReadFileInfo((diskIOMgr->diskIOPtrs + idx), fileId, diskIOMgr->filePath) == -1) {
+            if (initReadFileInfo((diskIOMgr->diskIOPtrs + idx), fileId, diskIOMgr->filePath, sockFd) == -1) {
                 pthread_mutex_unlock(&diskIOMgr->lock);
                 return -1;
             }
@@ -285,6 +288,19 @@ ssize_t readFile(int fd, char *buf, size_t readSize, DiskIOManager_t *diskIOMgr)
 //    printf("fd:%d for reading\n", fileFd);
     
     return read(fileFd, buf, readSize);
+}
+
+void closeFileBySockFd(int sockFd, DiskIOManager_t *diskIOMgr){
+    pthread_mutex_lock(&diskIOMgr->lock);
+    int idx;
+    for (idx = 0; idx < diskIOMgr->diskIOSize; ++idx) {
+        if (*(diskIOMgr->diskIOIndicators+idx) == 1) {
+            DiskIO_t *diskIOPtr = diskIOMgr->diskIOPtrs+idx;
+            if (diskIOPtr->openedBySock == sockFd) {
+                closeFile(idx, diskIOMgr);
+            }
+        }
+    pthread_mutex_unlock(&diskIOMgr->lock);
 }
 
 void closeFile(int fd, DiskIOManager_t *diskIOMgr){

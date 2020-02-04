@@ -179,7 +179,7 @@ int recvReplyFromBlockServer(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECBlockWo
 				if (strncmp(blockWorkerPtr->readMsgBuf->buf, blockOpenOK, strlen(blockOpenOK)) == 0)
 				{
 					getBlockFd(blockWorkerPtr);
-                    printf("get blockFd:%d for block:%llu\n", blockWorkerPtr->blockFd,blockWorkerPtr->blockId);
+//                    printf("get blockFd:%d for block:%llu\n", blockWorkerPtr->blockFd,blockWorkerPtr->blockId);
 				}else if(strncmp(blockWorkerPtr->readMsgBuf->buf, blockOpenFailed, strlen(blockOpenFailed)) == 0){
 					printf("BlockOpenFailed for block:%lu\n", blockWorkerPtr->blockId);
 				}else{
@@ -256,7 +256,7 @@ int openBlockForRead(ECBlockWorkerManager_t *ecBlockWorkerMgr, ECBlockWorker_t *
 	if (blockWorkerPtr->curState == Worker_STATE_CONNECTED)
 	{
 		blockWorkerPtr->writeMsgBuf->wOffset = constructOpenBlockCmd(blockWorkerPtr->writeMsgBuf->buf, blockWorkerPtr->blockId);
-        printf("openBlock:%llu ForRead\n",blockWorkerPtr->blockId);
+//        printf("openBlock:%llu ForRead\n",blockWorkerPtr->blockId);
 		//formBlockWriteCmd(blockWorkerPtr->writeMsgBuf->buf, blockWorkerPtr->blockId);
 		blockWorkerPtr->curState = Worker_STATE_REQUEST_READ;
 		return sendRequestToBlockServer(ecBlockWorkerMgr, blockWorkerPtr);

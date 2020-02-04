@@ -34,7 +34,7 @@
 
 #define MAX_EVENTS MAX_CONN_EVENTS
 
-#define PRINT_ROUTINE printf("tid:%ld, func:%s msg:%s\n",pthread_self(), __FUNCTION__);
+#define PRINT_ROUTINE printf("tid:%ld, func:%s\n",pthread_self(), __FUNCTION__);
 #define PRINT_ROUTINE_MSG(msg) printf("tid:%ld, func:%s msg:%s\n",pthread_self(), __FUNCTION__, msg);
 #define PRINT_ROUTINE_VALUE(value) printf ("tid:%ld, func:%s value:%lu\n",pthread_self(), __FUNCTION__, value);
 #endif

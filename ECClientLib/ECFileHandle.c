@@ -398,6 +398,7 @@ void deallocECFileMgr(ECFileManager_t *ecFileMgr){
 
 ssize_t readECFile(ECFileManager_t *ecFileMgr, int ecFd, char *readBuf, size_t readSize){
     if (readSize == 0) {
+        //PRINT_ROUTINE_VALUE(readSize);
         return 0;
     }
     
@@ -407,7 +408,7 @@ ssize_t readECFile(ECFileManager_t *ecFileMgr, int ecFd, char *readBuf, size_t r
     if (ecFile->degradedReadFlag == 0)
      {
 //         printf("readSize:%lu\n",readSize);
-         PRINT_ROUTINE_VALUE(readSize);
+         //PRINT_ROUTINE_VALUE(readSize);
          readedSize = performReadJob(ecFileMgr,  ecFd, readBuf,  readSize);
      }else{
          if (ecFile->decoding_matrix == NULL) {

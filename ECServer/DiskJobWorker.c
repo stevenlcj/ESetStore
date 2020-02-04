@@ -128,7 +128,7 @@ void handleReadJob(DiskJobWorker_t *diskJobWorkerPtr, DiskJob_t *diskJobPtr){
             diskJobPtr->bufHandledSize = diskJobPtr->bufHandledSize + (size_t)readSize;
         }else{
             perror("Unable to read data from disk");
-            break;
+//            break;
         }
     }while(diskJobPtr->bufHandledSize != diskJobPtr->bufReqSize);
     
@@ -151,7 +151,7 @@ void handleWriteJob(DiskJobWorker_t *diskJobWorkerPtr, DiskJob_t *diskJobPtr){
             diskJobPtr->bufHandledSize = diskJobPtr->bufHandledSize + (size_t)writeSize;
         }else{
             perror("Unable to write data to disk");
-            break;
+//            break;
         }
     }while(diskJobPtr->bufHandledSize != diskJobPtr->bufReqSize);
 

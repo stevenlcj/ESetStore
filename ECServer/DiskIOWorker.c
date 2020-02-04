@@ -23,7 +23,7 @@ int readLocalFile(int fd, char *buf, int sizeToRead, DiskIOManager_t *diskIOMgr)
         ssize_t curReadedSize = readFile(fd, buf + readedSize, (sizeToRead - readedSize), diskIOMgr);
         if (curReadedSize <= 0) {
             perror("Unable to read\n");
-            break;
+//            break;
         }
         
         readedSize = readedSize + (int) curReadedSize;

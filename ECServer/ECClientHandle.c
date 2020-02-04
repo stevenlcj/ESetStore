@@ -355,7 +355,6 @@ int writeDataToDisk(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
 			totalWriteSize = totalWriteSize + (size_t)writeSize;
 		}else{
 			perror("Unable to write data to disk");
-            break;
 		}
 	}while(canWriteSize != totalWriteSize);
 

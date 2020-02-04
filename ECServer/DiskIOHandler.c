@@ -300,6 +300,7 @@ void closeFileBySockFd(int sockFd, DiskIOManager_t *diskIOMgr){
                 closeFile(idx, diskIOMgr);
             }
         }
+    }
     pthread_mutex_unlock(&diskIOMgr->lock);
 }
 

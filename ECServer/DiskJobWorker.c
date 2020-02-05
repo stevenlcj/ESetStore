@@ -119,15 +119,28 @@ void putDiskIOJob(DiskJobWorker_t *diskJobWorker, DiskJob_t *diskJobPtr){
 }
 
 void handleReadJob(DiskJobWorker_t *diskJobWorkerPtr, DiskJob_t *diskJobPtr){
-    DiskIOManager_t *diskIOPtr = (DiskIOManager_t *)diskJobWorkerPtr->diskIOMgrPtr;
+    DiskIOManager_t *diskIOMgrPtr = (DiskIOManager_t *)diskJobWorkerPtr->diskIOMgrPtr;
     gettimeofday(&diskJobPtr->startRead, NULL);
     do{
-        ssize_t readSize = readFile(diskJobPtr->diskFd, diskJobPtr->buf + diskJobPtr->bufHandledSize, (diskJobPtr->bufReqSize - diskJobPtr->bufHandledSize), diskIOPtr);
+        ssize_t readSize = readFile(diskJobPtr->diskFd, diskJobPtr->buf + diskJobPtr->bufHandledSize, (diskJobPtr->bufReqSize - diskJobPtr->bufHandledSize), diskIOMgrPtr);
         if (readSize > 0)
         {
             diskJobPtr->bufHandledSize = diskJobPtr->bufHandledSize + (size_t)readSize;
         }else{
+            ssize_t fileSize = getFileSizeByFd(diskJobPtr->diskFd, diskIOMgrPtr);
+            ssize_t fileOffset = getFileOffsetByFd(diskJobPtr->diskFd, diskIOMgrPtr);
+            if (fileSize < 0 || fileOffset < 0) {
+                printf("Error for get fileSize fileOffset\n");
+            }
+            
+            if (fileSize == fileOffset) {
+                printf("Already read the whole file :%ld, offset:%ld\n",fileSize, fileOffset);
+                break;
+            }
+            
+            printf("Already read file:%ld, offset:%ld\n",fileSize, fileOffset);
             perror("Unable to read data from disk");
+            
 //            break;
         }
     }while(diskJobPtr->bufHandledSize != diskJobPtr->bufReqSize);

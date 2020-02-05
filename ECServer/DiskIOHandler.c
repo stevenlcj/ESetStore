@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include <sys/time.h>
 #include <pthread.h>
+#include <sys/stat.h>
 
 const char fileSuffix[] = ".raw\0";
 const char fileMetaSuffix[] = ".meta\0";
@@ -70,10 +71,20 @@ int getFileId(DiskIOManager_t *diskIOMgr, uint64_t fileId){
 }
 
 int initReadFileInfo(DiskIO_t *diskIOPtr, uint64_t fileId, char *dirPath, int sockFd){
+    struct stat st; /*declare stat variable*/
+         
+    if(stat(absFilePath,&st)!=0){
+        perror("stat file failed");
+        return -1;
+    }
+
     diskIOPtr->blockId = fileId;
     diskIOPtr->openedBySock = sockFd;
     diskIOPtr->fileNameSize = uint64_to_str(fileId, diskIOPtr->fileName, FILE_NAME_BUF_SIZE);
     
+    diskIOPtr->fileSize = st.st_size;
+    diskIOPtr->fileOffset = 0;
+
     size_t strSize = strlen(fileMetaSuffix);
     memcpy(diskIOPtr->fileMetaName, diskIOPtr->fileName, diskIOPtr->fileNameSize);
     memcpy((diskIOPtr->fileMetaName + diskIOPtr->fileNameSize), fileMetaSuffix, strSize);
@@ -100,7 +111,7 @@ int initReadFileInfo(DiskIO_t *diskIOPtr, uint64_t fileId, char *dirPath, int so
         
         return -1;
     }
-    
+     
     //    if ((diskIOPtr->fileMetaFd = open(diskIOPtr->fileMetaName, O_RDWR | O_CREAT)) == -1) {
     //        close(diskIOPtr->fileFd);
     //
@@ -272,6 +283,35 @@ ssize_t writeFile(int fd, char *buf, size_t writeSize, DiskIOManager_t *diskIOMg
     return writedSize;
 }
 
+ssize_t getFileSizeByFd(int fd, DiskIOManager_t *diskIOMgr){
+    if (fd < 0 || fd > diskIOMgr->diskIOSize) {
+        return -1;
+    }
+    
+    DiskIO_t *diskIOPtr = (diskIOMgr->diskIOPtrs + fd);
+    
+    if (diskIOPtr->fileFd <= 0) {
+        return -1;
+    }
+    
+    return (ssize_t)diskIOPtr->fileSize;
+}
+
+ssize_t getFileOffsetByFd(int fd, DiskIOManager_t *diskIOMgr){
+    if (fd < 0 || fd > diskIOMgr->diskIOSize) {
+        return -1;
+    }
+    
+    DiskIO_t *diskIOPtr = (diskIOMgr->diskIOPtrs + fd);
+    
+    if (diskIOPtr->fileFd <= 0) {
+        return -1;
+    }
+    
+    return (ssize_t)diskIOPtr->fileOffset;
+}
+
+
 ssize_t readFile(int fd, char *buf, size_t readSize, DiskIOManager_t *diskIOMgr){
     if (fd < 0 || fd > diskIOMgr->diskIOSize) {
         return -1;
@@ -287,7 +327,13 @@ ssize_t readFile(int fd, char *buf, size_t readSize, DiskIOManager_t *diskIOMgr)
     
 //    printf("fd:%d for reading\n", fileFd);
     
-    return read(fileFd, buf, readSize);
+    ssize_t readedSize = read(fileFd, buf, readSize);
+    
+    if (readedSize > 0) {
+        diskIOPtr->fileOffset = diskIOPtr->fileOffset +readedSize;
+    }
+    
+    return readedSize;
 }
 
 void closeFileBySockFd(int sockFd, DiskIOManager_t *diskIOMgr){

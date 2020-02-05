@@ -120,15 +120,17 @@ void putDiskIOJob(DiskJobWorker_t *diskJobWorker, DiskJob_t *diskJobPtr){
 
 void handleReadJob(DiskJobWorker_t *diskJobWorkerPtr, DiskJob_t *diskJobPtr){
     DiskIOManager_t *diskIOMgrPtr = (DiskIOManager_t *)diskJobWorkerPtr->diskIOMgrPtr;
+    ECClient_t *ecClientPtr = (ECClient_t *)diskJobPtr->sourcePtr;
+
     gettimeofday(&diskJobPtr->startRead, NULL);
     do{
-        ssize_t readSize = readFile(diskJobPtr->diskFd, diskJobPtr->buf + diskJobPtr->bufHandledSize, (diskJobPtr->bufReqSize - diskJobPtr->bufHandledSize), diskIOMgrPtr);
+        ssize_t readSize = readFile(diskJobPtr->diskFd, diskJobPtr->buf + diskJobPtr->bufHandledSize, (diskJobPtr->bufReqSize - diskJobPtr->bufHandledSize), diskIOMgrPtr,ecClientPtr->sockFd);
         if (readSize > 0)
         {
             diskJobPtr->bufHandledSize = diskJobPtr->bufHandledSize + (size_t)readSize;
         }else{
-            ssize_t fileSize = getFileSizeByFd(diskJobPtr->diskFd, diskIOMgrPtr);
-            ssize_t fileOffset = getFileOffsetByFd(diskJobPtr->diskFd, diskIOMgrPtr);
+            ssize_t fileSize = getFileSizeByFd(diskJobPtr->diskFd, diskIOMgrPtr, ecClientPtr->sockFd);
+            ssize_t fileOffset = getFileOffsetByFd(diskJobPtr->diskFd, diskIOMgrPtr, ecClientPtr->sockFd);
             if (fileSize < 0 || fileOffset < 0) {
                 printf("Error for get fileSize fileOffset\n");
             }

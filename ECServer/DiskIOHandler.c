@@ -111,7 +111,7 @@ int initReadFileInfo(DiskIO_t *diskIOPtr, uint64_t fileId, char *dirPath, int so
         
         return -1;
     }
-     
+
     //    if ((diskIOPtr->fileMetaFd = open(diskIOPtr->fileMetaName, O_RDWR | O_CREAT)) == -1) {
     //        close(diskIOPtr->fileFd);
     //

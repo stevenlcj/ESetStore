@@ -256,7 +256,7 @@ size_t readRawDataToBuf(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr,
     size_t readedSize = 0;
     ssize_t readSize = 0;
     do{
-    	readSize = readFile(ecClientPtr->fileFd, buf + readedSize, reqSize, diskIOMgr);
+    	readSize = readFile(ecClientPtr->fileFd, buf + readedSize, reqSize, diskIOMgr, ecClientPtr->sockFd);
     	if (readSize <= 0)
     	{
     		perror("Unable to read");

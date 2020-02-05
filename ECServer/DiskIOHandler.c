@@ -95,7 +95,6 @@ int initReadFileInfo(DiskIO_t *diskIOPtr, uint64_t fileId, char *dirPath, int so
     diskIOPtr->fileNameSize = diskIOPtr->fileNameSize + strSize;
     *(diskIOPtr->fileName + diskIOPtr->fileNameSize) = '\0';
     
-    diskIOPtr->fileSize = 0;
     diskIOPtr->fileCheckSum = 0;
     
     char absFilePath[1024];

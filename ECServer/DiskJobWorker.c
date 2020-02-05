@@ -157,8 +157,9 @@ void handleReadJob(DiskJobWorker_t *diskJobWorkerPtr, DiskJob_t *diskJobPtr){
 
 void handleWriteJob(DiskJobWorker_t *diskJobWorkerPtr, DiskJob_t *diskJobPtr){
     DiskIOManager_t *diskIOPtr = (DiskIOManager_t *)diskJobWorkerPtr->diskIOMgrPtr;
+    ECClient_t *ecClientPtr = (ECClient_t *)diskJobPtr->sourcePtr;
     do{
-        ssize_t writeSize = writeFile(diskJobPtr->diskFd, diskJobPtr->buf + diskJobPtr->bufHandledSize, (diskJobPtr->bufReqSize - diskJobPtr->bufHandledSize), diskIOPtr);
+        ssize_t writeSize = writeFile(diskJobPtr->diskFd, diskJobPtr->buf + diskJobPtr->bufHandledSize, (diskJobPtr->bufReqSize - diskJobPtr->bufHandledSize), diskIOPtr,ecClientPtr->sockFd);
         if (writeSize > 0)
         {
             diskJobPtr->bufHandledSize = diskJobPtr->bufHandledSize + (size_t)writeSize;

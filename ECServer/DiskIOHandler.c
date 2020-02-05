@@ -72,8 +72,8 @@ int getFileId(DiskIOManager_t *diskIOMgr, uint64_t fileId){
 
 int initReadFileInfo(DiskIO_t *diskIOPtr, uint64_t fileId, char *dirPath, int sockFd){
     struct stat st; /*declare stat variable*/
-         
-    if(stat(absFilePath,&st)!=0){
+
+    if(stat(dirPath,&st)!=0){
         perror("stat file failed");
         return -1;
     }
@@ -252,7 +252,7 @@ int startReadFile(uint64_t fileId,DiskIOManager_t *diskIOMgr, int sockFd){
 }
 
 
-ssize_t writeFile(int fd, char *buf, size_t writeSize, DiskIOManager_t *diskIOMgr){
+ssize_t writeFile(int fd, char *buf, size_t writeSize, DiskIOManager_t *diskIOMgr, int sockFd){
     if (fd < 0 || fd > diskIOMgr->diskIOSize) {
         printf("fd:%d, diskIOMgr->diskIOSize:%lu\n",fd, diskIOMgr->diskIOSize);
         return -1;
@@ -264,6 +264,11 @@ ssize_t writeFile(int fd, char *buf, size_t writeSize, DiskIOManager_t *diskIOMg
 #ifdef EC_DEBUG_MODE
         printf("error: diskIOPtr->fileFd <= 0\n");
 #endif
+        return -1;
+    }
+    
+    if (diskIOPtr->openedBySock != sockFd) {
+        printf("func:%s diskIOPtr->openedBySock != sockFd\n",__FUNCTION__);
         return -1;
     }
     
@@ -283,7 +288,7 @@ ssize_t writeFile(int fd, char *buf, size_t writeSize, DiskIOManager_t *diskIOMg
     return writedSize;
 }
 
-ssize_t getFileSizeByFd(int fd, DiskIOManager_t *diskIOMgr){
+ssize_t getFileSizeByFd(int fd, DiskIOManager_t *diskIOMgr, int sockFd){
     if (fd < 0 || fd > diskIOMgr->diskIOSize) {
         return -1;
     }
@@ -291,13 +296,18 @@ ssize_t getFileSizeByFd(int fd, DiskIOManager_t *diskIOMgr){
     DiskIO_t *diskIOPtr = (diskIOMgr->diskIOPtrs + fd);
     
     if (diskIOPtr->fileFd <= 0) {
+        return -1;
+    }
+    
+    if (diskIOPtr->openedBySock != sockFd) {
+        printf("func:%s diskIOPtr->openedBySock != sockFd\n",__FUNCTION__);
         return -1;
     }
     
     return (ssize_t)diskIOPtr->fileSize;
 }
 
-ssize_t getFileOffsetByFd(int fd, DiskIOManager_t *diskIOMgr){
+ssize_t getFileOffsetByFd(int fd, DiskIOManager_t *diskIOMgr, int sockFd){
     if (fd < 0 || fd > diskIOMgr->diskIOSize) {
         return -1;
     }
@@ -305,6 +315,11 @@ ssize_t getFileOffsetByFd(int fd, DiskIOManager_t *diskIOMgr){
     DiskIO_t *diskIOPtr = (diskIOMgr->diskIOPtrs + fd);
     
     if (diskIOPtr->fileFd <= 0) {
+        return -1;
+    }
+    
+    if (diskIOPtr->openedBySock != sockFd) {
+        printf("func:%s diskIOPtr->openedBySock != sockFd\n",__FUNCTION__);
         return -1;
     }
     
@@ -312,7 +327,7 @@ ssize_t getFileOffsetByFd(int fd, DiskIOManager_t *diskIOMgr){
 }
 
 
-ssize_t readFile(int fd, char *buf, size_t readSize, DiskIOManager_t *diskIOMgr){
+ssize_t readFile(int fd, char *buf, size_t readSize, DiskIOManager_t *diskIOMgr, int sockFd){
     if (fd < 0 || fd > diskIOMgr->diskIOSize) {
         return -1;
     }
@@ -320,6 +335,11 @@ ssize_t readFile(int fd, char *buf, size_t readSize, DiskIOManager_t *diskIOMgr)
     DiskIO_t *diskIOPtr = (diskIOMgr->diskIOPtrs + fd);
     
     if (diskIOPtr->fileFd <= 0) {
+        return -1;
+    }
+    
+    if (diskIOPtr->openedBySock != sockFd) {
+        printf("func:%s diskIOPtr->openedBySock != sockFd\n",__FUNCTION__);
         return -1;
     }
     

@@ -18,12 +18,13 @@
 
 int readLocalFile(int fd, char *buf, int sizeToRead, DiskIOManager_t *diskIOMgr){
     int readedSize = 0;
+    ECBlockServerEngine_t *ecBlockServerEnginePtr = (ECBlockServerEngine_t *)diskIOMgr->serverEngine;
+
     
     do {
-        ssize_t curReadedSize = readFile(fd, buf + readedSize, (sizeToRead - readedSize), diskIOMgr);
+        ssize_t curReadedSize = readFile(fd, buf + readedSize, (sizeToRead - readedSize), diskIOMgr,ecBlockServerEnginePtr->metaFd);
         if (curReadedSize <= 0) {
             perror("Unable to read\n");
-//            break;
         }
         
         readedSize = readedSize + (int) curReadedSize;
@@ -35,7 +36,7 @@ int readLocalFile(int fd, char *buf, int sizeToRead, DiskIOManager_t *diskIOMgr)
 
 int performDiskReadJob(RecoveryThreadManager_t *recoveryThMgr, recoveryBuf_t *curRecoveryBuf){
     int bIdx;
-    
+
     ECBlockServerEngine_t *ecBlockServerEnginePtr = (ECBlockServerEngine_t *)recoveryThMgr->enginePtr;
 
     for (bIdx = 0; bIdx < recoveryThMgr->sourceNodesSize; ++bIdx) {
@@ -50,7 +51,7 @@ int performDiskReadJob(RecoveryThreadManager_t *recoveryThMgr, recoveryBuf_t *cu
         }
         
         if (blockInfoPtr->fd < 0) {
-            printf("Unable to start read for blockIdx:%lu\n", blockInfoPtr->blockId);
+            printf("Unable to start read for blockIdx:%llu\n", blockInfoPtr->blockId);
             return -1;
         }
         
@@ -61,7 +62,7 @@ int performDiskReadJob(RecoveryThreadManager_t *recoveryThMgr, recoveryBuf_t *cu
         int readedSize = readLocalFile(blockInfoPtr->fd, buf, readSize, ecBlockServerEnginePtr->diskIOMgr);
         
         if (readedSize <= 0 || readedSize != readSize) {
-            printf("readLocalFile error readedSize:%d for blockIdx:%lu\n",readedSize, blockInfoPtr->blockId);
+            printf("readLocalFile error readedSize:%d for blockIdx:%llu\n",readedSize, blockInfoPtr->blockId);
             break;
         }
         
@@ -116,9 +117,9 @@ void performWriteDiskJob(RecoveryThreadManager_t *recoveryThMgr, int bufIdx){
             printf("Unable to write for blockIdx:%lu as fd < 0\n", blockInfoPtr->blockId);
             return ;
         }
+    
+        *(curBuf->bufWritedSize + idx) = (int)writeFile(blockInfoPtr->fd, curBuf->outputBufsPtrs[idx - recoveryThMgr->sourceNodesSize], *(curBuf->bufToWriteSize + idx), ecBlockServerEnginePtr->diskIOMgr,ecBlockServerEnginePtr->metaFd);
         
-
-        *(curBuf->bufWritedSize + idx) = (int)writeFile(blockInfoPtr->fd, curBuf->outputBufsPtrs[idx - recoveryThMgr->sourceNodesSize], *(curBuf->bufToWriteSize + idx), ecBlockServerEnginePtr->diskIOMgr);
         if(*(curBuf->bufWritedSize + idx) != *(curBuf->bufToWriteSize + idx)){
             printf("Size to write:%d, Writed size:%d for blockIdx:%lu\n",*(curBuf->bufToWriteSize + idx), *(curBuf->bufWritedSize + idx), blockInfoPtr->blockId);
             return;

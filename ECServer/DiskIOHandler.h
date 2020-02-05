@@ -55,11 +55,11 @@ int startWriteFile(uint64_t fileId,DiskIOManager_t *diskIOMgr, int sockFd);
 int startAppendFile(uint64_t fileId,DiskIOManager_t *diskIOMgr, int sockFd);
 int startReadFile(uint64_t fileId,DiskIOManager_t *diskIOMgr, int sockFd);
 
-ssize_t writeFile(int fd, char *buf, size_t writeSize, DiskIOManager_t *diskIOMgr);
-ssize_t readFile(int fd, char *buf, size_t readSize, DiskIOManager_t *diskIOMgr);
+ssize_t writeFile(int fd, char *buf, size_t writeSize, DiskIOManager_t *diskIOMgr, int sockFd);
+ssize_t readFile(int fd, char *buf, size_t readSize, DiskIOManager_t *diskIOMgr, int sockFd);
 
-ssize_t getFileSizeByFd(int fd, DiskIOManager_t *diskIOMgr);
-ssize_t getFileOffsetByFd(int fd, DiskIOManager_t *diskIOMgr);
+ssize_t getFileSizeByFd(int fd, DiskIOManager_t *diskIOMgr, int sockFd);
+ssize_t getFileOffsetByFd(int fd, DiskIOManager_t *diskIOMgr, int sockFd);
 
 
 void closeFileBySockFd(int sockFd, DiskIOManager_t *diskIOMgr);

@@ -349,7 +349,7 @@ int writeDataToDisk(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
 	}
 
 	do{
-		writeSize = writeFile(ecClientPtr->fileFd, rMsgBuf->buf + totalWriteSize, (canWriteSize - totalWriteSize), diskIOPtr);
+		writeSize = writeFile(ecClientPtr->fileFd, rMsgBuf->buf + totalWriteSize, (canWriteSize - totalWriteSize), diskIOPtr, ecClientPtr->sockFd);
 		if (writeSize > 0)
 		{
 			totalWriteSize = totalWriteSize + (size_t)writeSize;

@@ -45,6 +45,10 @@ KeyValueJob_t *getKeyValueJob(KeyValueJobQueue_t *jobQueue){
     jobQueue->jobPtr = jobQueue->jobPtr->next;
     --jobQueue->jobSize;
     
+    if (jobQueue->jobSize == 0) {
+        jobQueue->jobPtr = NULL;
+    }
+    
     return keyValueJob;
 }
 
@@ -52,6 +56,8 @@ void removeTheJobFromQueue(KeyValueJobQueue_t *jobQueue, KeyValueJob_t *keyValue
     size_t idx = 0;
     KeyValueJob_t *jobPtr = jobQueue->jobPtr;
 
+    printf("the key:%s\n",keyValueJob->key);
+    printf("key for comp:%s\n",keyValueJob->key);
     if (keyValueJob->keySize == jobPtr->keySize &&
         strncmp(keyValueJob->key, jobPtr->key, keyValueJob->keySize) == 0)
     {
@@ -62,8 +68,8 @@ void removeTheJobFromQueue(KeyValueJobQueue_t *jobQueue, KeyValueJob_t *keyValue
 
     for (idx = 1; idx < jobQueue->jobSize; ++idx)
     {
-        if (keyValueJob->keySize == jobPtr->keySize &&
-            strncmp(keyValueJob->key, jobPtr->key, keyValueJob->keySize) == 0)
+        if (keyValueJob->keySize == jobPtr->next->keySize &&
+            strncmp(keyValueJob->key, jobPtr->next->key, keyValueJob->keySize) == 0)
         {
             jobPtr->next = keyValueJob->next;
             --jobQueue->jobSize;

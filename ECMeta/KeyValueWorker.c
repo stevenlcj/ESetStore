@@ -228,7 +228,7 @@ void writeReadSucceedFeedback(KeyValueWorker_t *workerPtr, KeyValueJob_t *keyVal
     for (idx = 0; idx < blockSize; ++idx) {
         ECBlock_t *curBlock = curItem->blockGroupsTail->blocks + idx;
         Rack_t *curRack = ecMetaServerPtr->rMap->racks + curBlock->rackId;
-        Server_t *curServer = curRack->servers + curBlock->serverId;;
+        Server_t *curServer = curRack->servers + curBlock->serverId;
         
         writeToBuf(writeFeedBackBuf, blockHeader, &curWriteSize, &writeBackOffset);
         int_to_str((int)idx, buf, DEFAUT_MESSGAE_READ_WRITE_BUF);
@@ -368,6 +368,23 @@ void writeCreateFeedBack(KeyValueWorker_t *workerPtr, KeyValueJob_t *keyValueJob
         ECBlock_t *curBlock = curItem->blockGroupsTail->blocks + idx;
         Rack_t *curRack = ecMetaServerPtr->rMap->racks + curBlock->rackId;
         Server_t *curServer = curRack->servers + curBlock->serverId;;
+        
+        if (curServer->curState != SERVER_CONNECTED) {
+            int sIdx = 0;
+            for (sIdx = 0; idx < blockSize; ++sIdx){
+                if (sIdx == idx) {
+                    continue;
+                }
+                ECBlock_t *theBlock = curItem->blockGroupsTail->blocks + sIdx;
+                Rack_t *theRack = ecMetaServerPtr->rMap->racks + theBlock->rackId;
+                curServer = theRack->servers + theBlock->serverId;
+                
+                if (curServer->curState != SERVER_DOWN) {
+                    break;
+                }
+            }
+        }
+
 
         writeToBuf(writeFeedBackBuf, blockHeader, &curWriteSize, &writeBackOffset);
         int_to_str((int)idx, buf, DEFAUT_MESSGAE_READ_WRITE_BUF);

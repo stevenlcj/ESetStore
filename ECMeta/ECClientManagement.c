@@ -604,26 +604,9 @@ void startMonitoringConn(ECClientThread_t *ecClientThread){
                         ecClientThread->totalPipeRSize = ecClientThread->totalPipeRSize + totalRead;
                     }
                     
-//                    tmpBufSize = strlen(pipeRSize);
-//                    memcpy(tmpBuf, pipeRSize, tmpBufSize);
-//                    size_t intSize = int_to_str(ecClientThread->totalPipeRSize, rSize, 30);
-//                    memcpy(tmpBuf + tmpBufSize, rSize, intSize);
-//                    tmpBufSize = tmpBufSize + intSize;
-//                    memcpy(tmpBuf + tmpBufSize, pipeId, strlen(pipeId));
-//                    tmpBufSize = tmpBufSize + strlen(pipeId);
-//                    intSize = int_to_str(curClientConn->sockFd, rSize, 30);
-//                    memcpy(tmpBuf + tmpBufSize, rSize, intSize);
-//                    tmpBufSize = tmpBufSize + intSize;
-//                    tmpBuf[tmpBufSize] = '\r';
-//                    tmpBuf[tmpBufSize + 1] = '\n';
-//                    tmpBufSize = tmpBufSize + 2;
-//                    write(ecClientThread->threadLogFd, tmpBuf, tmpBufSize);
-                    
-                    //printf("write(ecClientThread->threadLogFd:%d\n",ecClientThread->threadLogFd);
                     
                     while (ecClientThread->incomingJobQueue->jobSize != 0) {
                         KeyValueJob_t *keyValueJob = getKeyValueJob(ecClientThread->incomingJobQueue);
-//                        write(ecClientThread->threadLogFd, keyValueJob->feedbackContent, keyValueJob->feedbackBufSize);
                         putJob(ecClientThread->writeJobQueue, keyValueJob);
                     }
                     

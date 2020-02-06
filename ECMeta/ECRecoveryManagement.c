@@ -136,6 +136,7 @@ void markFailedBlocks(ECRecoveryManager_t *ecRecoveryMgrPtr, FailedServerList_t 
 
     while  (eSetListsPtr != NULL) {
         ESets_t *eSetPtr = eSetListsPtr->failedESets;
+        eSetPtr->failedServerNum = eSetPtr->failedServerNum + 1;
         printf("Set idx:%d\n", eSetPtr->esetId);
         BlockGroupMapping_t *blockGpMappingPtr = placementMgrPtr->blockGroupMap[eSetPtr->esetId];
         

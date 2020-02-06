@@ -15,6 +15,7 @@ BlockGroupMapping_t *newBlockGroupMapping(uint64_t groupBlockId){
     mappingPtr->next = NULL;
     mappingPtr->pre = NULL;
     
+    mappingPtr->recoveredFlag = 0;
     return mappingPtr;
 }
 
@@ -48,6 +49,7 @@ void createGroupESets(PlacementGroup_t *placementGroup, int setStartIdx, ESets_t
         
         curESet->recoveringFlag = 0;
         curESet->redoRecover = 0;
+        curESet->failedServerNum = 0;
         
         curESet->esetId = setStartIdx + setIdx;
         curESet->size = placementGroup->rowSize;
@@ -77,7 +79,6 @@ void createESets(PlacementGroup_t *placementGroup, int groupSize, ESets_t *eSets
         PlacementGroup_t *curGroup = placementGroup + groupIdx;
         setStartIdx = placementGroup->colSize * placementGroup->colSize * groupIdx;
         ESets_t *curESetPtr = eSets + setStartIdx;
-        
         createGroupESets(curGroup, setStartIdx, curESetPtr);
     }
 }
@@ -251,17 +252,29 @@ ESets_t *requestPlacement(PlacementManager_t *placementMgr, ECBlockGroup_t *bloc
     pthread_mutex_lock(&placementMgr->placeLock);
 //    printf("placeIdx:%lu eSetsSize:%d\n",placementMgr->placeIdx,  placementMgr->eSetsSize);
     ESets_t *sets = placementMgr->eSets+placementMgr->placeIdx;
+    size_t placeIdx = placementMgr->placeIdx;
+    while (sets->failedServerNum > 0) {
+        //Find an ESet that has no failed storage server
+        placementMgr->placeIdx = (placementMgr->placeIdx + 1) % placementMgr->eSetsSize;
+        sets = placementMgr->eSets+placementMgr->placeIdx;
+        
+        if (placeIdx == placementMgr->placeIdx) {
+            //No ESet has unfailed storage server
+            break;
+        }
+    }
     
     BlockGroupMapping_t *blockGroupMappingPtr = newBlockGroupMapping(blockGroupPtr->blockGroupId);
     blockGroupMappingPtr->blockGroupPtr = blockGroupPtr;
     
+    if (sets->failedServerNum > 0) {
+        blockGroupMappingPtr->recoveredFlag = 1;
+    }
+    
     blockGroupMappingPtr->next = placementMgr->blockGroupMap[placementMgr->placeIdx];
     placementMgr->blockGroupMap[placementMgr->placeIdx] = blockGroupMappingPtr;
     
-    placementMgr->placeIdx = (placementMgr->placeIdx + 1) % placementMgr->eSetsSize;
-
     pthread_mutex_unlock(&placementMgr->placeLock);
-    
     return sets;
 }
 

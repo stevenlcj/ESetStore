@@ -59,6 +59,7 @@ typedef struct ESets{
     int esetId;
     int groupId;
     
+    int failedServerNum;
     int recoveringFlag;
     int redoRecover;
     

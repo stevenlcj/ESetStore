@@ -218,10 +218,10 @@ void reportBlockDeletion(BlockServerManager_t *blockServerMgr, uint64_t blockId,
 
     size_t idx;
 
-    printf("reportBlockDeletion with blockId:%llu, inProcessingJobQueue->jobSize:%lu\n",blockId, blockServerMgr->inProcessingJobQueue->jobSize);
+//    printf("reportBlockDeletion with blockId:%llu, inProcessingJobQueue->jobSize:%lu\n",blockId, blockServerMgr->inProcessingJobQueue->jobSize);
     for (idx = 0; idx < blockServerMgr->inProcessingJobQueue->jobSize; ++idx)
     {
-        printf("The blockgroup:%llu\n",((keyValueItem_t *)jobPtr->itemPtr)->blockGroupsHeader->blockGroupId);
+//        printf("The blockgroup:%llu\n",((keyValueItem_t *)jobPtr->itemPtr)->blockGroupsHeader->blockGroupId);
         if (jobHasTheBlock(jobPtr, blockGroupIdx) == 1)
         {
             //gettimeofday(&jobPtr->serverOutTime, NULL);
@@ -235,9 +235,9 @@ void reportBlockDeletion(BlockServerManager_t *blockServerMgr, uint64_t blockId,
 
     if (jobPtr->inProcessingNum == 0)
     {
-        printf("Remove the jobPtr with The blockgroup:%llu\n",((keyValueItem_t *)jobPtr->itemPtr)->blockGroupsHeader->blockGroupId);
+//        printf("Remove the jobPtr with The blockgroup:%llu\n",((keyValueItem_t *)jobPtr->itemPtr)->blockGroupsHeader->blockGroupId);
         removeTheJobFromQueue(blockServerMgr->inProcessingJobQueue, jobPtr);
-        printf("removedFromJobQueue:%llu, inProcessingJobQueue->jobSize:%lu\n",blockId, blockServerMgr->inProcessingJobQueue->jobSize);
+//        printf("removedFromJobQueue:%llu, inProcessingJobQueue->jobSize:%lu\n",blockId, blockServerMgr->inProcessingJobQueue->jobSize);
 
         reportServersDeleteJobDone(blockServerMgr, jobPtr);
     }
@@ -309,7 +309,7 @@ void performDeleteBlocksJob(BlockServerManager_t *blockServerMgr, KeyValueJob_t 
     if (jobPtr->inProcessingNum > 0)
     {   
         putJob(blockServerMgr->inProcessingJobQueue, jobPtr);
-        printf("Put Block Group:%lu,In processing job num:%lu\n",blockGroup->blockGroupId, blockServerMgr->inProcessingJobQueue->jobSize);
+//        printf("Put Block Group:%lu,In processing job num:%lu\n",blockGroup->blockGroupId, blockServerMgr->inProcessingJobQueue->jobSize);
     }else{
         //Return the job to keyvalue worker...
         reportServersDeleteJobDone(blockServerMgr, jobPtr);

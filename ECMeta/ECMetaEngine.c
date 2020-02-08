@@ -23,9 +23,7 @@ void ec_signal_callback_handler(int signum){
 }
 
 void mainLoop(struct ECMetaServer *ecMetaServer){
-    while (ecMetaServer->exitFlag == 0) {
-        start_wait_conn(ecMetaServer);
-    }
+    start_wait_conn(ecMetaServer)
 }
 
 void startBindListen(struct ECMetaServer *ecMetaServer){

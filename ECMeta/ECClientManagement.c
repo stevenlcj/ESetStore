@@ -308,7 +308,7 @@ void processClientCmd(ECClientThread_t *clientThreadPtr, ClientConnection_t *cli
             return;
             break;
         case ECClientCommand_DELETE:{
-            printf("Recvd delete cmd:%s\n", clientConnPtr->readMsgBuf->buf);
+//            printf("Recvd delete cmd:%s\n", clientConnPtr->readMsgBuf->buf);
             processRecvdCmd(clientThreadPtr, clientConnPtr, KEYVALUEJOB_DELETE);
         }
         default:

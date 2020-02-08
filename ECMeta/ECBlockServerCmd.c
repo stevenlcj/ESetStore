@@ -309,7 +309,7 @@ size_t writeDeleteBlockCmd(void *blockPtr, void *blockServerPtr){
     *(bufToWrite + writeBackOffset) = '\0';
     writeBackOffset = writeBackOffset + 1;
     
-    printf("writeDeleteBlockCmd***:%s\n",bufToWrite);
+//    printf("writeDeleteBlockCmd***:%s\n",bufToWrite);
     addWriteMsgToBlockserver((BlockServer_t *) blockServerPtr, bufToWrite, writeBackOffset);
     
     return writeBackOffset;

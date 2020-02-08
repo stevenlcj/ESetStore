@@ -163,7 +163,7 @@ int make_non_blocking_sock(int sfd)
     return 0;
 }
 
-void start_wait_conn(ECMetaServer_t *ecMetaServer){
+void  start_wait_conn(ECMetaServer_t *ecMetaServer){
     int idx, eventsNum;
     
 //    struct epoll_event clientEvent, serverEvent;
@@ -180,7 +180,7 @@ void start_wait_conn(ECMetaServer_t *ecMetaServer){
     if(status ==-1)
     {
         perror("epoll_ctl clientEvent");
-        return;
+        return -1;
     }
     
     status = add_event(ecMetaServer->efd, EPOLLIN ,ecMetaServer->chunkFd, NULL);
@@ -244,6 +244,8 @@ void start_wait_conn(ECMetaServer_t *ecMetaServer){
 
         }
     }
+    
+    return;
 }
 
 //void start_epoll_ClientConn(struct ClientThread *clientThread){

@@ -255,6 +255,7 @@ ESets_t *requestPlacement(PlacementManager_t *placementMgr, ECBlockGroup_t *bloc
     size_t placeIdx = placementMgr->placeIdx;
     while (sets->failedServerNum > 0) {
         //Find an ESet that has no failed storage server
+        printf("set idx: failed server num:%d\n",sets->failedServerNum);
         placementMgr->placeIdx = (placementMgr->placeIdx + 1) % placementMgr->eSetsSize;
         sets = placementMgr->eSets+placementMgr->placeIdx;
         

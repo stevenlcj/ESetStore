@@ -154,7 +154,7 @@ void processServerCmd(BlockServerManager_t *blockServerMgr, BlockServer_t *curSe
             char theBlockIdStr[] = "BlockId:\0";
             char suffix[] = "\r\n\0";
             uint64_t blockIdx = getUInt64ValueBetweenStrs(theBlockIdStr, suffix, curServerPtr->readMsgBuf->buf, strlen(curServerPtr->readMsgBuf->buf));
-            printf("delete Failed for blockId:%lu\n",blockIdx);
+//            printf("delete Failed for blockId:%lu\n",blockIdx);
             reportBlockDeletion(blockServerMgr, blockIdx, 0);
         }
         break;

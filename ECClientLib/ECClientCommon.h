@@ -34,7 +34,31 @@
 
 #define MAX_EVENTS MAX_CONN_EVENTS
 
-#define PRINT_ROUTINE printf("tid:%ld, func:%s\n",pthread_self(), __FUNCTION__);
-#define PRINT_ROUTINE_MSG(msg) printf("tid:%ld, func:%s msg:%s\n",pthread_self(), __FUNCTION__, msg);
-#define PRINT_ROUTINE_VALUE(value) printf ("tid:%ld, func:%s value:%lu\n",pthread_self(), __FUNCTION__, value);
+#ifdef DEBUG_ESetStoreCLIENTS
+#define PRINT_ROUTINE { \
+char theHost[1024]; \
+gethostname(theHost, 1024);\
+printf("host:%s, func:%s\n",theHost, __FUNCTION__);\
+}
+
+#define PRINT_ROUTINE_MSG(msg) { \
+char theHost[1024]; \
+gethostname(theHost, 1024);\
+printf("host:%s, func:%s, msg:%s\n",theHost, __FUNCTION__,msg);\
+}
+
+#define PRINT_ROUTINE_VALUE(value) { \
+char theHost[1024]; \
+gethostname(theHost, 1024);\
+printf("host:%s, func:%s\, value:%d\n",theHost, __FUNCTION__,value);\
+}
+
+#else
+
+#define PRINT_ROUTINE
+#define PRINT_ROUTINE_MSG(msg)
+#define PRINT_ROUTINE_VALUE(value)
+
+#endif
+
 #endif

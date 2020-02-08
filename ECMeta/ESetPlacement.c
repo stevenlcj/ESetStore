@@ -265,6 +265,8 @@ ESets_t *requestPlacement(PlacementManager_t *placementMgr, ECBlockGroup_t *bloc
         }
     }
     
+    placementMgr->placeIdx = (placementMgr->placeIdx + 1) % placementMgr->eSetsSize;
+    
     BlockGroupMapping_t *blockGroupMappingPtr = newBlockGroupMapping(blockGroupPtr->blockGroupId);
     blockGroupMappingPtr->blockGroupPtr = blockGroupPtr;
     

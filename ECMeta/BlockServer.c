@@ -208,10 +208,10 @@ void reportServersDeleteJobDone(BlockServerManager_t *blockServerMgr,  KeyValueJ
 
 void reportBlockDeletion(BlockServerManager_t *blockServerMgr, uint64_t blockId, int OKFlag){
     uint64_t blockGroupIdx = getBlockGroupId(blockId);
-    printf("blockGroupIdx:%lu, blockId:%lu\n", blockGroupIdx, blockId);
+//    printf("blockGroupIdx:%lu, blockId:%lu\n", blockGroupIdx, blockId);
     if (OKFlag == 0)
     {
-        printf("Delete none exist block:%lu\n", blockId);
+//        printf("Delete none exist block:%lu\n", blockId);
     }
 
     KeyValueJob_t *jobPtr = blockServerMgr->inProcessingJobQueue->jobPtr;

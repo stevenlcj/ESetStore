@@ -15,7 +15,7 @@
 #include <pthread.h>
 
 ECClientEngine_t *createECClientEngine(const char *metaIP, int metaPort){
-    //printf ("tid:%ld, __FUNCTION__ = %s\n",pthread_self(), __FUNCTION__);
+    PRINT_ROUTINE
     if (metaPort < 0 || metaIP == NULL ) {
         //printf("%ld metaPort < 0 || metaIP == NULL\n",pthread_self());
         return NULL;
@@ -35,14 +35,13 @@ ECClientEngine_t *createECClientEngine(const char *metaIP, int metaPort){
     
     clientEnginePtr->ecFileMgr = createECFileMgr((void *) clientEnginePtr);
     
-    //printf ("tid:%ld, __FUNCTION__ = %s Done\n",pthread_self(), __FUNCTION__);
+    PRINT_ROUTINE_MSG("Leave")
 
     return clientEnginePtr;
 }
 
 void deallocECClientEngine(ECClientEngine_t * clientEnginePtr){
-    //printf ("tid:%ld, __FUNCTION__ = %s\n",pthread_self(), __FUNCTION__);
-
+    PRINT_ROUTINE
     if (clientEnginePtr == NULL) {
         return;
     }
@@ -52,15 +51,14 @@ void deallocECClientEngine(ECClientEngine_t * clientEnginePtr){
     deallocECFileMgr(clientEnginePtr->ecFileMgr);
     
     free(clientEnginePtr);
-    //printf ("tid:%ld, __FUNCTION__ = %sdone\n",pthread_self(), __FUNCTION__);
-
+    PRINT_ROUTINE_MSG("Leave")
 }
 
 //Send cmd:Create\r\nFileName\r\n\0
 
 int createFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
+    PRINT_ROUTINE
     char *createCmd = formCreateFileCmd(FileName);
-    
     if (createCmd == NULL) {
         return -1;
     }
@@ -91,17 +89,19 @@ int createFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
     char createOK[] ="CreateOK\0";
     if (strncmp(createOK, recvBuf, strlen(createOK)) != 0) {
         closeECFile(clientEnginePtr->ecFileMgr, fileFd);
+        PRINT_ROUTINE_MSG("Not OK")
         return -1;
     }
     
     initCreateFileFromMetaReply(clientEnginePtr->ecFileMgr, fileFd, recvBuf);
-    
+    PRINT_ROUTINE_MSG("Leave")
     return fileFd;
 }
 
 //Send cmd:Open\r\nFileName\r\n\0
 //open for read or open for append
 int openFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
+    PRINT_ROUTINE
     char *openCmd = formReadFileCmd(FileName);
     
     if (openCmd == NULL) {
@@ -132,11 +132,12 @@ int openFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
     char readOK[] ="ReadOK\0";
     if (strncmp(readOK, recvBuf, strlen(readOK)) != 0) {
         closeECFile(clientEnginePtr->ecFileMgr, fileFd);
+        PRINT_ROUTINE_MSG("Not OK")
         return -1;
     }
     
     initReadFileFromMetaReply(clientEnginePtr->ecFileMgr, fileFd, recvBuf);
-    
+    PRINT_ROUTINE_MSG("Leave")
 //    initFileFromMetaReply(clientEnginePtr->ecFileMgr, fileFd, recvBuf);
     
     return fileFd;
@@ -168,7 +169,7 @@ size_t getFileSize(ECClientEngine_t *clientEnginePtr, int fileFd){
 }
 
 ssize_t readFile(ECClientEngine_t *clientEnginePtr, int fileFd, char *buf, size_t readSize){
-    //printf ("tid:%ld, __FUNCTION__ = %s\n",pthread_self(), __FUNCTION__);
+    PRINT_ROUTINE
     ECFile_t *ecFile = clientEnginePtr->ecFileMgr->ecFiles + fileFd;
     
     //PRINT_ROUTINE_VALUE(readSize);
@@ -195,7 +196,7 @@ ssize_t readFile(ECClientEngine_t *clientEnginePtr, int fileFd, char *buf, size_
     if (ecFile->fileCurState == ECFILE_STATE_READ ) {
         //printf("call readECFile\n");
         ssize_t readedSize = readECFile(clientEnginePtr->ecFileMgr, fileFd, buf, readSize);
-        //printf ("tid:%ld, __FUNCTION__ = %s done\n",pthread_self(), __FUNCTION__);
+        PRINT_ROUTINE
         return readedSize;
     }
     
@@ -204,8 +205,7 @@ ssize_t readFile(ECClientEngine_t *clientEnginePtr, int fileFd, char *buf, size_
 }
 
 ssize_t writeFile(ECClientEngine_t *clientEnginePtr, int fileFd, char *buf, size_t writeSize){
-    //printf("to writeFile writeSize:%lu\n", writeSize);
-    //printf ("tid:%ld, __FUNCTION__ = %s\n",pthread_self(), __FUNCTION__);
+    PRINT_ROUTINE
     ssize_t writedSize = writeECFile(clientEnginePtr->ecFileMgr, fileFd, buf, writeSize);
     //printf ("tid:%ld, __FUNCTION__ = %s writedSize:%ld\n",pthread_self(), __FUNCTION__,writedSize);
 
@@ -214,6 +214,7 @@ ssize_t writeFile(ECClientEngine_t *clientEnginePtr, int fileFd, char *buf, size
     }
     
     if (writedSize == (ssize_t) writeSize) {
+        PRINT_ROUTINE
         return writedSize;
     }
     
@@ -221,8 +222,7 @@ ssize_t writeFile(ECClientEngine_t *clientEnginePtr, int fileFd, char *buf, size
 }
 
 int deleteFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
-    //printf ("tid:%ld, __FUNCTION__ = %s\n",pthread_self(), __FUNCTION__);
-
+    PRINT_ROUTINE
     char *deleteCmd = formDeleteFileCmd(FileName);
     
     ssize_t writeSize = writeCmdToMeta(clientEnginePtr, deleteCmd) ;
@@ -241,9 +241,10 @@ int deleteFile(ECClientEngine_t *clientEnginePtr, const char *FileName){
 
     //printf("deleteFile recvd:%s\n", recvBuf);
     if (recvSize <= (ssize_t) strlen(OKStr) || strncmp(recvBuf, OKStr, strlen(OKStr)) != 0) {
+        PRINT_ROUTINE_MSG("return -1")
         return -1;
     }
-    
+    PRINT_ROUTINE_MSG("return 0")
     return 0;
 }
 
@@ -340,7 +341,9 @@ int deleteFiles(ECClientEngine_t *clientEnginePtr, char *filesToDelete[], int fi
 }
 
 void closeFile(ECClientEngine_t *clientEnginePtr, int fileFd){
+    PRINT_ROUTINE
     closeECFile(clientEnginePtr->ecFileMgr, fileFd);
+    PRINT_ROUTINE_MSG("file closed")
 }
 
 ssize_t writeCmdToMeta(ECClientEngine_t *clientEnginePtr, char *cmd){

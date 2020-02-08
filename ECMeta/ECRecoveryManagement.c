@@ -491,7 +491,7 @@ FailedESetsList_t *getESetsInRecoveryingList(ECRecoveryManager_t *ecRecoveryMgrP
     
     while (recoveringESetsListPtr != NULL) {
         
-        if (recoveringESetsListPtr->failedESets->esetId == recoveringESetsListPtr->failedESets->esetId) {
+        if (recoveringESetsListPtr->failedESets->esetId == eSetsListPtr->failedESets->esetId) {
             return recoveringESetsListPtr;
         }
         

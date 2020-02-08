@@ -56,8 +56,8 @@ void removeTheJobFromQueue(KeyValueJobQueue_t *jobQueue, KeyValueJob_t *keyValue
     size_t idx = 0;
     KeyValueJob_t *jobPtr = jobQueue->jobPtr;
 
-    printf("the key:%s\n",keyValueJob->key);
-    printf("key for comp:%s\n",keyValueJob->key);
+//    printf("the key:%s\n",keyValueJob->key);
+//    printf("key for comp:%s\n",keyValueJob->key);
     if (keyValueJob->keySize == jobPtr->keySize &&
         strncmp(keyValueJob->key, jobPtr->key, keyValueJob->keySize) == 0)
     {

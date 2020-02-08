@@ -917,7 +917,6 @@ void workerPerformWrite(ECBlockWorkerManager_t *ecBlockWorkerMgr){
 	ecBlockWorkerMgr->jobDoneFlag = 1;
 	coderWorker->jobFinishedFlag = 1;
 	sem_post(&coderWorker->waitJobSem);
-	sem_post(&ecBlockWorkerMgr->jobFinishedSem);
 }
 
 void copyDataToMainBuf(ECBlockWorkerManager_t *ecBlockWorkerMgr){
@@ -1399,9 +1398,11 @@ void workerPerformDegradedRead(ECBlockWorkerManager_t *ecBlockWorkerMgr){
                     workerBufPtr->codingSize = workerBufPtr->alignedBufSize;
                     
                     int mIdx = 0;
+                    
                     for (mIdx = 0; mIdx < (int)workerBufPtr->outputNum; ++mIdx) {
                         memset(workerBufPtr->outputBufs[mIdx], 0, workerBufPtr->codingSize);
                     }
+                    
                     sem_post(&coderWorker->waitJobSem);
                 }
             }
@@ -1419,7 +1420,6 @@ void workerPerformDegradedRead(ECBlockWorkerManager_t *ecBlockWorkerMgr){
     ecBlockWorkerMgr->jobDoneFlag = 1;
     coderWorker->jobFinishedFlag = 1;
     sem_post(&coderWorker->waitJobSem);
-    sem_post(&ecBlockWorkerMgr->jobFinishedSem);
 }
 
 void performThreadWorkerJob(ECBlockWorkerManager_t *ecBlockWorkerMgr){
@@ -1446,6 +1446,8 @@ void performThreadWorkerJob(ECBlockWorkerManager_t *ecBlockWorkerMgr){
             workerPerformReadPrint(ecBlockWorkerMgr,"Unknow job:");
 			printf("Unknow job\n");
 	}
+    
+    sem_post(&ecBlockWorkerMgr->jobFinishedSem);
 }
 
 void *threadBlockWorker(void *arg){

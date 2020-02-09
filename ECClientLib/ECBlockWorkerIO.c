@@ -1387,31 +1387,33 @@ void workerPerformDegradedRead(ECBlockWorkerManager_t *ecBlockWorkerMgr){
     int idx, bIdx = 0;
     
     while(ecFilePtr->bufWritedSize < ecFilePtr->bufSize){
-        if(ecFilePtr->bufHandledSize < ecFilePtr->bufSize){
-            for (idx = 0; idx < ecBlockWorkerMgr->workerBufsNum; ++idx)
+        for (idx = 0; idx < ecBlockWorkerMgr->workerBufsNum; ++idx)
+        {
+            if (*(ecBlockWorkerMgr->bufInUseFlag + idx) == 0)
             {
-                if (*(ecBlockWorkerMgr->bufInUseFlag + idx) == 0)
-                {
-                    *(ecBlockWorkerMgr->bufInUseFlag + idx) = 1;
-                    workerBuf_t *workerBufPtr = ecBlockWorkerMgr->workerBufs + idx;
-                    workersReqDegradedBlocksRead(ecBlockWorkerMgr,workerBufPtr);
-                    workerBufPtr->codingSize = workerBufPtr->alignedBufSize;
+                *(ecBlockWorkerMgr->bufInUseFlag + idx) = 1;
+                workerBuf_t *workerBufPtr = ecBlockWorkerMgr->workerBufs + idx;
+                workersReqDegradedBlocksRead(ecBlockWorkerMgr,workerBufPtr);
+                workerBufPtr->codingSize = workerBufPtr->alignedBufSize;
                     
-                    int mIdx = 0;
+                int mIdx = 0;
                     
-                    for (mIdx = 0; mIdx < (int)workerBufPtr->outputNum; ++mIdx) {
-                        memset(workerBufPtr->outputBufs[mIdx], 0, workerBufPtr->codingSize);
-                    }
+                for (mIdx = 0; mIdx < (int)workerBufPtr->outputNum; ++mIdx) {
+                    memset(workerBufPtr->outputBufs[mIdx], 0, workerBufPtr->codingSize);
+                }
                     
                     sem_post(&coderWorker->waitJobSem);
-                }
+            }
+            
+            if (ecFilePtr->bufHandledSize == ecFilePtr->bufSize) {
+                break;
             }
         }
         
         workerBuf_t *writeWorkerBuf = ecBlockWorkerMgr->workerBufs + bIdx;
         
         sem_wait(&coderWorker->jobFinishedSem);
-//        printf("bIdx:%d inUsetFlag:%d\n",bIdx,*(ecBlockWorkerMgr->bufInUseFlag + bIdx));
+        printf("bIdx:%d inUsetFlag:%d\n",bIdx,*(ecBlockWorkerMgr->bufInUseFlag + bIdx));
         copyCodedToMainBuf(ecFilePtr, writeWorkerBuf);
         *(ecBlockWorkerMgr->bufInUseFlag + bIdx) = 0;
         bIdx = (bIdx + 1) % ecBlockWorkerMgr->workerBufsNum;

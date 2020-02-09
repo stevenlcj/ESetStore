@@ -117,7 +117,9 @@ int readReplyFromBlockServer(RecoveryThreadManager_t *recoveryThMgr, blockInfo_t
     }
     
     printf("Recvd size:%lu\n", blockInfoPtr->readMsgBuf->wOffset);
-    
+    if (blockInfoPtr->readMsgBuf->wOffset == 0) {
+        sleep(500);
+    }
     return cmdDoneFlag;
 }
 

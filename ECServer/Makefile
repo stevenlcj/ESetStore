@@ -1,6 +1,6 @@
 CC = gcc
 LIBS = -pthread -lm -g
-CFLAGS = -Wall $(OPTFLAGS) $(LIBS)  -L/usr/local/lib
+CFLAGS = -Wall -g3 $(OPTFLAGS) $(LIBS)  -L/usr/local/lib
 
 TARGET = ESetServer
 OBJS = ECServerMain.o ecNetHandle.o configProperties.o cfgParser.o BlockServerEngine.o ECMetaServerHandle.o ecUtils.o metaBlockServerCommand.o ClientHandle.o ClientBlockServerCmd.o MessageBuffer.o DiskIOHandler.o jerasure.o galois.o GCRSMatrix.o RecoveryThreadWorker.o NetIOWorker.o DiskIOWorker.o CodingWorker.o ECClientHandle.o ECClientResponse.o DiskJobQueue.o DiskJobWorker.o

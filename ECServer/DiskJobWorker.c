@@ -142,6 +142,7 @@ void handleReadJob(DiskJobWorker_t *diskJobWorkerPtr, DiskJob_t *diskJobPtr){
             
             printf("Already read file:%ld, offset:%ld\n",fileSize, fileOffset);
             perror("Unable to read data from disk");
+            sleep(100);
             
 //            break;
         }

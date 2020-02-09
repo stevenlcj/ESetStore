@@ -421,7 +421,7 @@ int processClientInCmd(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
 		case ECCLIENT_IN_STATE_WAIT:{
 			if (hasInCmd(rMsgBuf->buf, rMsgBuf->wOffset, cmdFlag) == 1)
 			{
-				//printf("Recv cmd:%s\n", rMsgBuf->buf);
+                printf("Sock:%d,Recv cmd:%s\n",ecClientPtr->sockFd, rMsgBuf->buf);
 				getClientInCmd(ecClientMgr, ecClientPtr);
 
 				//if (ecClientPtr->clientInState == ECCLIENT_IN_STATE_WAIT){
@@ -442,6 +442,7 @@ int processClientInCmd(ECClientManager_t *ecClientMgr, ECClient_t *ecClientPtr){
 		case ECCLIENT_IN_STATE_WRITING:{
 			if (writeDataToDisk(ecClientMgr, ecClientPtr) == 1)
 			{
+                printf("Sock:%d,Recv cmd:%s\n",ecClientPtr->sockFd, rMsgBuf->buf);
 				//Done writing
 				//printf("Done writing\n");
 				ecClientPtr->clientInState = ECCLIENT_IN_STATE_WAIT;

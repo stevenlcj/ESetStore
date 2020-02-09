@@ -253,7 +253,8 @@ int startReadFile(uint64_t fileId,DiskIOManager_t *diskIOMgr, int sockFd){
 
 ssize_t writeFile(int fd, char *buf, size_t writeSize, DiskIOManager_t *diskIOMgr, int sockFd){
     if (fd < 0 || fd > diskIOMgr->diskIOSize) {
-        printf("fd:%d, diskIOMgr->diskIOSize:%lu\n",fd, diskIOMgr->diskIOSize);
+        printf("fd:%d, diskIOMgr->diskIOSize:%lu sockFd:%d\n",fd, diskIOMgr->diskIOSize, sockFd);
+        exit(-1);
         return -1;
     }
 

@@ -1,10 +1,10 @@
 Publications:
 
-Chengjian Liu, Qiang Wang, Xiaowen Chu, Yiu-Wing Leung and  Hai Liu. ESetStore: an Erasure-coded Storage System with Fast Data Recovery. IEEE Transactions on Parallel and Distributed Systems, To appear.
+Chengjian Liu, Qiang Wang, Xiaowen Chu, Yiu-Wing Leung and  Hai Liu, "ESetStore: an Erasure-coded Storage System with Fast Data Recovery", IEEE Transactions on Parallel and Distributed Systems, To appear.
 
-Chengjian Liu, Qiang Wang, Xiaowen Chu, and Yiu-Wing Leung. G-CRS: GPU Accelerated Cauchy Reed-Solomon Coding. IEEE Transactions on Parallel and Distributed Systems, no. 7, pp. 1484-1498, 2018.
+Chengjian Liu, Qiang Wang, Xiaowen Chu, and Yiu-Wing Leung, "G-CRS: GPU Accelerated Cauchy Reed-Solomon Coding", IEEE Transactions on Parallel and Distributed Systems, no. 7, pp. 1484-1498, 2018.
 
-Chengjian Liu, Xiaowen Chu, Hai Liu and Yiu-Wing Leung, ESet: Placing Data Towards Efficient Recovery for Large-Scale Erasure-Coded Storage Systems, ICCCN 2016
+Chengjian Liu, Xiaowen Chu, Hai Liu and Yiu-Wing Leung, "ESet: Placing Data Towards Efficient Recovery for Large-Scale Erasure-Coded Storage Systems", ICCCN 2016
 
 
 This repository contains the related code for our work ESetStore, which is a prototype of erasure-coded storage systems with fast data recovery.
